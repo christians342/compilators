@@ -3,11 +3,10 @@
     //- Classifica como Tokens
 
 %{
-#include "tokens.h"
+    #include "tokens.h"
+    #include "hash.c"
 
-int lineNumber = 1;
-
-#include "hash.c"
+    int lineNumber = 1;
 %}
 
 %x COMMENT
