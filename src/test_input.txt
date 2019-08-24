@@ -1,9 +1,7 @@
 aa
 9.0
-9
-/*
 ()
-)
-*/
-()
-oi
+###
+testVar 999
+###
+testVar // comment

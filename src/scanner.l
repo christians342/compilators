@@ -1,6 +1,6 @@
     //Scanner:
-    //- Identifica Lexemas
-    //- Classifica como Tokens
+    //- Identify Lexemas
+    //- Classify as Tokens
 
 %{
     #include "tokens.h"
@@ -28,8 +28,8 @@ DIGIT [0-9]
 [ \n\t]                     {return 6; }
 "\\".*                      {return 7; }
 
-"/*"                        BEGIN(COMMENT);
-<COMMENT>"*/"               BEGIN(INITIAL);
+"###"                        BEGIN(COMMENT);
+<COMMENT>"###"               BEGIN(INITIAL);
 <COMMENT>"\n"               ++lineNumber;
 <COMMENT>.                  
 
