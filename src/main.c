@@ -21,15 +21,6 @@ int main(){
             case LIT_FLOAT:
                 fprintf(stderr, "Literal Real.\n");
                 break;
-            case 5:
-                fprintf(stderr, "Found new line...\n");
-                break;
-            case 6:
-                fprintf(stderr, "Ignoring...\n");
-                break;
-            case 7:
-                fprintf(stderr, "comment. Ignoring...\n");
-                break;
             default:
                 fprintf(stderr, "Token ascii %c.\n", tok);
         }

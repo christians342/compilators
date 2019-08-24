@@ -24,9 +24,9 @@ DIGIT [0-9]
 
 [-+*/()]                    {return yytext[0];}
 
-"\n"                        {++lineNumber; return 5; }          
-[ \n\t]                     {return 6; }
-"\\".*                      {return 7; }
+"\n"                        {++lineNumber;}          
+[ \t]                       
+"//".*                      
 
 "###"                        BEGIN(COMMENT);
 <COMMENT>"###"               BEGIN(INITIAL);
