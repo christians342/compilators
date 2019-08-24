@@ -4,4 +4,6 @@ aa
 ###
 testVar 999
 ###
-testVar // comment
+int // comment
+if then else
+break
