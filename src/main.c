@@ -60,6 +60,12 @@ int main(){
             case LIT_FLOAT:
                 fprintf(stderr, "Literal Real.\n");
                 break;
+            case LIT_TRUE:
+                fprintf(stderr, "Literal TRUE.\n");
+                break;
+            case LIT_FALSE:
+                fprintf(stderr, "Literal FALSE.\n");
+                break;
             case OPERATOR_LE:
                 fprintf(stderr, "Operator le.\n");
                 break;

@@ -7,3 +7,6 @@ testVar 999
 int // comment
 if then else
 break
+$&v
+TRUE
+FALSE

@@ -30,6 +30,9 @@ DIGIT [0-9]
 "return"                        {return KW_RETURN;              }
 "break"                         {return KW_BREAK;               }
 
+"TRUE"                          {return LIT_TRUE;               }
+"FALSE"                         {return LIT_FALSE;              }
+
 [A-Za-z_][A-Za-z_0-9]*          {return TK_IDENTIFIER;          } 
 
 {DIGIT}+                        {return LIT_INTEGER;            }
@@ -40,7 +43,7 @@ DIGIT [0-9]
 "=="                            {return OPERATOR_EQ;            }
 "!="                            {return OPERATOR_DIF;           }
 
-[-+*/()]                        {return yytext[0];              }
+[,;:()[]\{\}+-*/<>=v.~&$#]      {return yytext[0];              }
 
 "\n"                            {++lineNumber;                  }          
 [ \t]                           {}
