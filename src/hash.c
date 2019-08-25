@@ -3,10 +3,7 @@
 HASH_NODE*Table[HASH_SIZE];
 
 void hashInit(void){
-    int i;
-    for(i = 0; i < HASH_SIZE; ++i){
-        Table[i] = 0;
-    }
+   memset(Table, 0, HASH_SIZE * sizeof(HASH_NODE*));
 }
 
 int hashAddress(char *text){
@@ -19,15 +16,27 @@ int hashAddress(char *text){
 }
 
 HASH_NODE *hashFind(char *text){
-    return 0;
+    HASH_NODE *node;
+    int address = hashAddress(text);
+
+    for(node = Table[address]; node; node = node->next)
+        if(!strcmp(text,node->text))
+            return node;
+
+    return 0; 
 }
 
-HASH_NODE *hashInsert(char *text){
+HASH_NODE *hashInsert(int type, char *text){
     HASH_NODE *newNode;
     int address = hashAddress(text);
+
+     if ((newNode = hashFind(text)) != 0)
+        return newNode;
+
     newNode = (HASH_NODE *) calloc(1, sizeof(HASH_NODE));
-    newNode->type = 1;
+    newNode->type = type;
     newNode->text = (char *) calloc(strlen(text) + 1, sizeof(char));
+
     strcpy(newNode->text, text);
     newNode->next = Table[address];
     Table[address] = newNode;
@@ -40,5 +49,5 @@ void hashPrint(void){
     HASH_NODE *node;
     for(i=0; i<HASH_SIZE; ++i)
         for(node=Table[i]; node; node = node->next)
-            printf("Table[%d] has %s\n", i, node->text);
+            fprintf(stderr," Table[%d] has %s\n",i,Table[i]->text);
 }
