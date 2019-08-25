@@ -6,12 +6,14 @@
     #include "tokens.h"
     #include "hash.c"
 
-    int lineNumber = 1;
+    int lineNumber;
 %}
 
 %x COMMENT
 
-DIGIT [0-9]
+DIGIT     [0-9]
+ALPHA     [A-Za-z_]
+ALPHA_NUM [A-Za-z_0-9]
 
 %%
 
@@ -30,20 +32,16 @@ DIGIT [0-9]
 "return"                        {return KW_RETURN;              }
 "break"                         {return KW_BREAK;               }
 
-"TRUE"                          {return LIT_TRUE;               }
-"FALSE"                         {return LIT_FALSE;              }
-
-[A-Za-z_][A-Za-z_0-9]*          {return TK_IDENTIFIER;          } 
-
-{DIGIT}+                        {return LIT_INTEGER;            }
-{DIGIT}+"."{DIGIT}+             {return LIT_FLOAT;              }
-
 "<="                            {return OPERATOR_LE;            }
 ">="                            {return OPERATOR_GE;            }
 "=="                            {return OPERATOR_EQ;            }
 "!="                            {return OPERATOR_DIF;           }
 
-[,;:()[]\{\}+-*/<>=v.~&$#]      {return yytext[0];              }
+"TRUE"                          {return LIT_TRUE;               }
+"FALSE"                         {return LIT_FALSE;              }
+
+[v\,\;\:\(\)\[\]\{\}\+\-\*\/\<\>\=\.\~\&\$\#]      {return yytext[0];        }
+
 
 "\n"                            {++lineNumber;                  }          
 [ \t]                           {}
@@ -54,9 +52,33 @@ DIGIT [0-9]
 <COMMENT>"\n"                   {++lineNumber;                  }
 <COMMENT>.                      {}
 
+{ALPHA}{ALPHA_NUM}*             {hashInsert(TK_IDENTIFIER, yytext);  return TK_IDENTIFIER;     } 
+{DIGIT}+                        {hashInsert(LIT_INTEGER, yytext);    return LIT_INTEGER;       }
+{DIGIT}*"."{DIGIT}+             {hashInsert(LIT_FLOAT, yytext);      return LIT_FLOAT;         }
+{DIGIT}+"."{DIGIT}*             {hashInsert(LIT_FLOAT, yytext);      return LIT_FLOAT;         }
+
+\'([^'\\\n]?|\\.)\'             {hashInsert(LIT_CHAR, yytext);       return LIT_CHAR;          }
+\"([^\"\\\n]|\\.)*\"            {hashInsert(LIT_STRING, yytext);     return LIT_STRING;        }
+
+\'([^'\\\n]?|\\.)+\'            {return TOKEN_ERROR;            }
+.				{return TOKEN_ERROR;            }
+
 %%
 
 int running = 1;
+
+void initMe(void){
+    lineNumber = 1;
+    hashInit();
+}
+
+int getLineNumber(void){   
+    return lineNumber;
+}
+
+int isRunning(void){
+   return running;
+}
 
 int yywrap(){
     running = 0;

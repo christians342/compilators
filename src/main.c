@@ -1,4 +1,3 @@
-
 int main(){
     int tok;
     hashInit();
@@ -78,9 +77,16 @@ int main(){
             case OPERATOR_DIF:
                 fprintf(stderr, "Operator dif.\n");
                 break;
+            case LIT_STRING:
+                fprintf(stderr, "String.\n");
+                break;
+            case LIT_CHAR:
+                fprintf(stderr, "Char.\n");
+                break;
             default:
                 fprintf(stderr, "Token ascii %c.\n", tok);
         }
     }
     hashPrint();
 }
+

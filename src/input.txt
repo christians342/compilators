@@ -1,0 +1,50 @@
+aa
+9.0
+()
+###
+testVar 999
+###
+int // comment
+if then else
+break
+$&v
+TRUE
+FALSE
+
+//Comentário
+
+###
+  Comentário 
+      de
+Múltiplas Linhas
+###
+
+//keywords
+byte int long float bool if then else while
+for read print return break
+
+//operadores
+<= >= == !=
+
+//literais numéricos
+1.1
+.05
+0.
+105
+
+//char
+'a' '1' 'e'
+
+//string
+"Algum comentário \" aleatório""Outro comentário"""
+
+" "
+
+' '
+''
+
+'asfg'
+
+
+
+
