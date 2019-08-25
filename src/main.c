@@ -1,86 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
 
-int main(){
-    int tok;
-    hashInit();
-    while(running){
-        tok = yylex();
+//lex.yy.h
+int yylex();
+extern char *yytext;
+extern FILE *yyin;
 
-        if(!running)
-            break;
 
-        switch(tok){
-            case KW_BYTE:
-                fprintf(stderr, "Found Keyword 'byte'.\n");
-                break;
-            case KW_INT:
-                fprintf(stderr, "Found Keyword 'int'.\n");
-                break;
-            case KW_LONG:
-                fprintf(stderr, "Found Keyword 'long'.\n");
-                break;
-            case KW_FLOAT:
-                fprintf(stderr, "Found Keyword 'float'.\n");
-                break;
-            case KW_BOOL:
-                fprintf(stderr, "Found Keyword 'bool'.\n");
-                break;
-            case KW_IF:
-                fprintf(stderr, "Found Keyword 'if'.\n");
-                break;
-            case KW_THEN:
-                fprintf(stderr, "Found Keyword 'then'.\n");
-                break;
-            case KW_ELSE:
-                fprintf(stderr, "Found Keyword 'else'.\n");
-                break;
-            case KW_WHILE:
-                fprintf(stderr, "Found Keyword 'while'.\n");
-                break;
-            case KW_FOR:
-                fprintf(stderr, "Found Keyword 'for'.\n");
-                break;
-            case KW_READ:
-                fprintf(stderr, "Found Keyword 'read'.\n");
-                break;
-            case KW_PRINT:
-                fprintf(stderr, "Found Keyword 'print'.\n");
-                break;
-            case KW_RETURN:
-                fprintf(stderr, "Found Keyword 'return'.\n");
-                break;
-            case KW_BREAK:
-                fprintf(stderr, "Found Keyword 'break'.\n");
-                break;
-            case TK_IDENTIFIER:
-                fprintf(stderr, "Identifier.\n");
-                break;
-            case LIT_INTEGER:
-                fprintf(stderr, "Literal Integer.\n");
-                break;
-            case LIT_FLOAT:
-                fprintf(stderr, "Literal Real.\n");
-                break;
-            case LIT_TRUE:
-                fprintf(stderr, "Literal TRUE.\n");
-                break;
-            case LIT_FALSE:
-                fprintf(stderr, "Literal FALSE.\n");
-                break;
-            case OPERATOR_LE:
-                fprintf(stderr, "Operator le.\n");
-                break;
-            case OPERATOR_GE:
-                fprintf(stderr, "Operator ge.\n");
-                break;
-            case OPERATOR_EQ:
-                fprintf(stderr, "Operator eq.\n");
-                break;
-            case OPERATOR_DIF:
-                fprintf(stderr, "Operator dif.\n");
-                break;
-            default:
-                fprintf(stderr, "Token ascii %c.\n", tok);
-        }
+int isRunning(void);
+void initMe(void);
+
+int main(int argc, char** argv)
+  {
+  FILE *gold = 0;
+  int token = 0;
+  int answar = 0;
+  int nota = 0;
+  int i=1;
+      fprintf(stderr,"Rodando main do prof. \n");
+
+  if (argc < 3)
+    {
+    printf("call: ./etapa1 input.txt output.txt \n");
+    exit(1);
     }
-    hashPrint();
-}
+  if (0==(yyin = fopen(argv[1],"r")))
+    {
+    printf("Cannot open file %s... \n",argv[1]);
+    exit(1);
+    }
+  if (0==(gold = fopen(argv[2],"r")))
+    {
+    printf("Cannot open file %s... \n",argv[2]);
+    exit(1);
+    }
+  initMe();
+  while (isRunning())
+    {
+    token = yylex();
+    
+    if (!isRunning())
+      break;
+    fscanf(gold,"%d",&answar);
+    if (token == answar)
+      {
+      fprintf(stderr,"%d=ok(%s)  ",i,yytext  );
+      ++nota;
+      }
+    else
+      fprintf(stderr,"\n%d=ERROR(%s,%d,%d) ",i,yytext,token,answar );
+    ++i;
+    }
+  printf("NOTA %d\n\n",nota);  
+  fprintf(stderr,"NOTA %d\n\n",nota);  
+  }
