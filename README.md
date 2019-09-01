@@ -1,4 +1,4 @@
-# compilators
+# compilers
 
 Project for the Course Compilers from the Informatics Institute of the Federal University of Rio Grande do Sul (UFRGS).
 
