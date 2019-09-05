@@ -46,7 +46,18 @@ decl:        fundec | vardec
 vardec:     KW_INT TK_IDENTIFIER '=' LIT_INTEGER ';'
         ;
 
-fundec:     KW_INT TK_IDENTIFIER '(' ')' cmd
+fundec:     KW_INT TK_IDENTIFIER '(' parlist ')' cmd
+        ;
+
+parlist:    par rest
+        |
+        ;
+
+rest:       ','par rest
+        |
+        ;
+
+par:        KW_INT
         ;
 
 block:      '{' lcmd '}'
@@ -66,3 +77,5 @@ int yyerror(char *msg){
     fprintf(stderr, "Syntax error! \n");
     exit(3);
 }
+
+// deal with empty command vs empty list
