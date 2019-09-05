@@ -1,12 +1,10 @@
-aa
-9.0
-()
-###
-testVar 999
-###
-int // comment
-if then else
-break
-$&v
-TRUE
-FALSE
+
+
+int x = 10;
+int y = 20;
+
+int func ( )
+{
+x = 5.6;
+y = 7.8 ;
+}

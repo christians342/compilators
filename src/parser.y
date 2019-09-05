@@ -36,24 +36,28 @@
 
 %%
 
-program:   program def
+program:   program decl
         |
         ;
 
-def:        fundec | vardec
+decl:        fundec | vardec
         ;
 
-vardec:     KW_INT TK_IDENTIFIER '=' LIT_INTEGER
+vardec:     KW_INT TK_IDENTIFIER '=' LIT_INTEGER ';'
         ;
 
-fundec:     KW_INT TK_IDENTIFIER '(' ')' body
+fundec:     KW_INT TK_IDENTIFIER '(' ')' cmd
         ;
 
-body:       cmd body
-        |
+block:      '{' lcmd '}'
         ;
 
 cmd:         TK_IDENTIFIER '=' LIT_FLOAT
+        |    block
+        ;
+
+lcmd:       lcmd cmd ';'
+        |
         ;
 
 %%
