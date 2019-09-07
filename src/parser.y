@@ -74,7 +74,7 @@ lcmd:       lcmd cmd ';'
 %%
 
 int yyerror(char *msg){
-    fprintf(stderr, "Syntax error! \n");
+    fprintf(stderr, "Syntax error at line %d! \n", lineNumber);
     exit(3);
 }
 
