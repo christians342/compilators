@@ -8,7 +8,7 @@ int main(int argc, char** argv){
 
     yyin = fopen(argv[1], "r");
     if (yyin == NULL) {
-        printf("Could not open file %s.\n", argv[1]);
+        printf("Unable to open file %s.\n", argv[1]);
         exit(ERROR_CODE);
   }
 

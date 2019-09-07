@@ -2,6 +2,15 @@
 %{
     #include <stdio.h>
     #include <stdlib.h>
+
+    #define SYMBOL_LIT_INT              1
+    #define SYMBOL_LIT_REAL             2
+    #define SYMBOL_LIT_TRUE             3
+    #define SYMBOL_LIT_FALSE            4
+    #define SYMBOL_LIT_CHAR             5
+    #define SYMBOL_LIT_STRING           6
+    #define SYMBOL_IDENTIFIER           7
+
 %}
 
 %token KW_BYTE       
@@ -65,9 +74,13 @@ block:      '{' lcmd '}'
 
 cmd:         TK_IDENTIFIER '=' LIT_FLOAT
         |    block
+        |
         ;
 
-lcmd:       lcmd cmd ';'
+lcmd:       cmd cmdrest
+        ;
+
+cmdrest:    ';' cmd cmdrest
         |
         ;
 
@@ -77,5 +90,3 @@ int yyerror(char *msg){
     fprintf(stderr, "Syntax error at line %d! \n", lineNumber);
     exit(3);
 }
-
-// deal with empty command vs empty list

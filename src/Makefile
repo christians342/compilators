@@ -12,7 +12,6 @@ etapa2: lex.yy.c y.tab.c y.tab.h
 lex.yy.c: scanner.l
 	lex scanner.l
 y.tab.c: 
-	yacc parser.y
 y.tab.h:
 	yacc parser.y -d
 
