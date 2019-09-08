@@ -121,6 +121,7 @@ simpleCmd:
            TK_IDENTIFIER '=' exp 
         |  TK_IDENTIFIER '[' exp ']' '=' listLit 
         |  KW_READ TK_IDENTIFIER
+        |  KW_READ scalar
         |  KW_PRINT printList
         |  KW_RETURN exp
         ;
@@ -142,11 +143,12 @@ cmd:
            
 
 lcmd:       cmd cmdrest
+        |
         ;
 
 cmdrest:    
         ';' cmd cmdrest
-        |
+        | ';'
         ;
 
 
