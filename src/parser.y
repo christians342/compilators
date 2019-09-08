@@ -45,48 +45,156 @@
 
 %%
 
-program:   program decl
+program:   
+          program decl
         |
         ;
 
-decl:        fundec | vardec
+
+decl:   
+          fundec 
+        | globaldec
+        ; 
+
+type:    
+          KW_BOOL 
+        | KW_BYTE 
+        | KW_INT 
+        | KW_LONG 
+        | KW_FLOAT
         ;
 
-vardec:     KW_INT TK_IDENTIFIER '=' LIT_INTEGER ';'
+scalar:     
+          LIT_TRUE 
+        | LIT_FALSE
+        | LIT_INTEGER
+        | LIT_FLOAT  
+        | LIT_CHAR 
         ;
 
-fundec:     KW_INT TK_IDENTIFIER '(' parlist ')' cmd
+
+globaldec: 
+           type TK_IDENTIFIER '=' scalar ';'
+        |  type TK_IDENTIFIER '[' scalar ']' arrayInit ';'
         ;
 
-parlist:    par rest
+arrayInit: 
+           ':' scalar listLit
+        |   
+        ;
+
+listLit: 
+            scalar listLit
+        |  
+        ;
+
+fundec:     
+           type TK_IDENTIFIER '(' parameterList ')' cmd
+        ;
+
+parameter:    
+           type TK_IDENTIFIER
+        ;
+
+parameterList:    
+           parameter rest
         |
         ;
 
-rest:       ','par rest
+rest:       
+           ',' parameterList
         |
         ;
 
-par:        KW_INT
+block:      
+           '{' lcmd '}'
         ;
 
-block:      '{' lcmd '}'
-        ;
-
-cmd:         TK_IDENTIFIER '=' LIT_FLOAT
-        |    block
+printList: 
+           exp printList
+        |  LIT_STRING printList
         |
         ;
+
+//comandos
+
+simpleCmd:
+           TK_IDENTIFIER '=' exp ';'
+        |  TK_IDENTIFIER '[' exp ']' '=' listLit 
+        |  KW_READ scalar
+        |  KW_PRINT printList
+        |  KW_RETURN exp
+        ;
+
+fluxControl:
+           KW_IF '(' exp ')' KW_THEN cmd KW_ELSE cmd
+        |  KW_IF '(' exp ')' KW_THEN cmd
+        |  KW_WHILE '(' exp ')' cmd
+        |  KW_BREAK
+        ;
+
+cmd:     
+           simpleCmd
+        |  fluxControl
+        |  exp
+        |  block
+        |
+        ;
+           
 
 lcmd:       cmd cmdrest
         ;
 
-cmdrest:    ';' cmd cmdrest
+cmdrest:    
+        ';' cmd cmdrest
         |
         ;
 
+//expressões
+
+opArithmetic:
+           '+'
+        |  '-'
+        |  '*'
+        |  '/'
+        ;
+
+opLogical:
+           '>'
+        |  '<'
+        |  'v'
+        |  '.'
+        |  '~'
+        |  OPERATOR_LE   
+        |  OPERATOR_GE   
+        |  OPERATOR_EQ   
+        |  OPERATOR_DIF
+        ; 
+
+expArithmetic:
+            TK_IDENTIFIER
+         |  scalar
+         |  expArithmetic opArithmetic expArithmetic
+         |  '(' expArithmetic ')'
+         |  TK_IDENTIFIER '[' expArithmetic ']'
+         |
+         ;
+
+expLogical:
+            TK_IDENTIFIER 
+         |  scalar
+         |  expLogical opLogical expLogical
+         |  '(' expLogical ')'
+         |
+         ;
+
+exp:
+            expArithmetic
+         |  expLogical
+         ;
 %%
 
 int yyerror(char *msg){
-    fprintf(stderr, "Syntax error at line %d! \n", lineNumber);
+    fprintf(stderr, "Syntax error at line %d! \n", getLineNumber());
     exit(3);
 }
