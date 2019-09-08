@@ -50,13 +50,12 @@ program:
         |
         ;
 
-
 decl:   
           fundec 
         | globaldec
         ; 
 
-type:    
+type:     
           KW_BOOL 
         | KW_BYTE 
         | KW_INT 
@@ -75,7 +74,7 @@ scalar:
 
 globaldec: 
            type TK_IDENTIFIER '=' scalar ';'
-        |  type TK_IDENTIFIER '[' scalar ']' arrayInit ';'
+        |  type TK_IDENTIFIER '[' LIT_INTEGER ']' arrayInit ';'
         ;
 
 arrayInit: 
@@ -106,22 +105,22 @@ rest:
         |
         ;
 
+//comandos
+
 block:      
            '{' lcmd '}'
         ;
 
 printList: 
-           exp printList
-        |  LIT_STRING printList
+            LIT_STRING printList         
+        |   exp printList
         |
         ;
 
-//comandos
-
 simpleCmd:
-           TK_IDENTIFIER '=' exp ';'
+           TK_IDENTIFIER '=' exp 
         |  TK_IDENTIFIER '[' exp ']' '=' listLit 
-        |  KW_READ scalar
+        |  KW_READ TK_IDENTIFIER
         |  KW_PRINT printList
         |  KW_RETURN exp
         ;
@@ -130,14 +129,14 @@ fluxControl:
            KW_IF '(' exp ')' KW_THEN cmd KW_ELSE cmd
         |  KW_IF '(' exp ')' KW_THEN cmd
         |  KW_WHILE '(' exp ')' cmd
+        |  KW_FOR '(' TK_IDENTIFIER ':' exp ',' exp ',' exp ')' cmd
         |  KW_BREAK
         ;
 
 cmd:     
            simpleCmd
-        |  fluxControl
-        |  exp
         |  block
+        |  fluxControl
         |
         ;
            
@@ -150,17 +149,15 @@ cmdrest:
         |
         ;
 
+
 //expressões
 
-opArithmetic:
+op:
            '+'
         |  '-'
         |  '*'
         |  '/'
-        ;
-
-opLogical:
-           '>'
+        |  '>'
         |  '<'
         |  'v'
         |  '.'
@@ -171,26 +168,23 @@ opLogical:
         |  OPERATOR_DIF
         ; 
 
-expArithmetic:
-            TK_IDENTIFIER
-         |  scalar
-         |  expArithmetic opArithmetic expArithmetic
-         |  '(' expArithmetic ')'
-         |  TK_IDENTIFIER '[' expArithmetic ']'
-         |
-         ;
+expParam:
+           exp expParamRest
+        ;
 
-expLogical:
-            TK_IDENTIFIER 
-         |  scalar
-         |  expLogical opLogical expLogical
-         |  '(' expLogical ')'
-         |
-         ;
+expParamRest:       
+           ',' expParam
+        |
+        ;
 
 exp:
-            expArithmetic
-         |  expLogical
+            TK_IDENTIFIER
+         |  scalar
+         | '(' exp ')'
+         |  TK_IDENTIFIER '[' exp ']'
+         |  TK_IDENTIFIER '(' expParam ')' 
+         |  exp op exp
+         |
          ;
 %%
 
