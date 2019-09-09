@@ -6,7 +6,7 @@ int a = 0;
 int i = 0;
 long l = 0;
 float f = 0.0;
-int vm[10] : 0 0 0; 
+int vm[10] : 0 0 0;
 int mat [10]; 
 
 int main (int a)

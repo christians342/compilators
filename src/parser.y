@@ -142,13 +142,13 @@ cmd:
         ;
            
 
-lcmd:       cmd cmdrest
-        |
+lcmd:       
+        cmd cmdrest
         ;
 
 cmdrest:    
         ';' cmd cmdrest
-        | ';'
+        |
         ;
 
 
