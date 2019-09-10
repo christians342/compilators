@@ -70,6 +70,12 @@ scalar:
         | LIT_FLOAT  
         | LIT_CHAR 
         ;
+        
+scalarNoBool:
+          LIT_INTEGER
+        | LIT_FLOAT  
+        | LIT_CHAR 
+        ;
 
 
 globaldec: 
@@ -78,12 +84,12 @@ globaldec:
         ;
 
 arrayInit: 
-           ':' scalar listLit
+           ':' scalarNoBool listLit
         |   
         ;
 
 listLit: 
-            scalar listLit
+            scalarNoBool listLit
         |  
         ;
 
@@ -119,9 +125,8 @@ printList:
 
 simpleCmd:
            TK_IDENTIFIER '=' exp 
-        |  TK_IDENTIFIER '[' exp ']' '=' listLit 
+        |  TK_IDENTIFIER '[' exp ']' '=' exp 
         |  KW_READ TK_IDENTIFIER
-        |  KW_READ scalar
         |  KW_PRINT printList
         |  KW_RETURN exp
         ;
