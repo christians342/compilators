@@ -139,13 +139,15 @@ fluxControl:
         |  KW_BREAK
         ;
 
+exp
+
+
 cmd:     
            simpleCmd
         |  block
         |  fluxControl
         |
-        ;
-           
+        ;           
 
 lcmd:       
         cmd cmdrest
@@ -156,24 +158,6 @@ cmdrest:
         |
         ;
 
-
-//expressões
-
-op:
-           '+'
-        |  '-'
-        |  '*'
-        |  '/'
-        |  '>'
-        |  '<'
-        |  'v'
-        |  '.'
-        |  '~'
-        |  OPERATOR_LE   
-        |  OPERATOR_GE   
-        |  OPERATOR_EQ   
-        |  OPERATOR_DIF
-        ; 
 
 expParam:
            exp expParamRest
@@ -190,8 +174,18 @@ exp:
          | '(' exp ')'
          |  TK_IDENTIFIER '[' exp ']'
          |  TK_IDENTIFIER '(' expParam ')' 
-         |  exp op exp
-         |
+         |  exp '+' exp
+         |  exp '-' exp
+         |  exp '*' exp
+         |  exp '/' exp
+         |  exp '>' exp
+         |  exp '<' exp
+         |  exp 'v' exp
+         |  exp '.' exp
+         |  exp '~' exp
+         |  OPERATOR_LE   
+         |  OPERATOR_GE   
+         |  OPERATOR_EQ   
          ;
 %%
 
