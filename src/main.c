@@ -1,4 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "hash.h"
+
 #define ERROR_CODE 3
+
+int yyparse();
+extern FILE* yyin;
 
 int main(int argc, char** argv){
     if (argc < 2){
