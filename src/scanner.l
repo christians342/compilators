@@ -3,7 +3,8 @@
     //- Classify as Tokens
 
 %{
-    #include "hash.c"
+    #include "astree.h"
+    #include "hash.h"
     #include "y.tab.h"
 
     int lineNumber;
@@ -53,7 +54,8 @@ ALPHA_NUM [A-Za-z_0-9]
 <COMMENT>.                      
 
 {ALPHA}{ALPHA_NUM}*             {hashInsert(TK_IDENTIFIER, yytext);  return TK_IDENTIFIER;     } 
-{DIGIT}+                        {hashInsert(LIT_INTEGER, yytext);    return LIT_INTEGER;       }
+{DIGIT}+                        {yylval.symbol = hashInsert(LIT_INTEGER, yytext);   
+                                 return LIT_INTEGER;                                            }
 {DIGIT}*"."{DIGIT}+             {hashInsert(LIT_FLOAT, yytext);      return LIT_FLOAT;         }
 {DIGIT}+"."{DIGIT}*             {hashInsert(LIT_FLOAT, yytext);      return LIT_FLOAT;         }
 
@@ -83,4 +85,3 @@ int yywrap(){
 }
 
 #include "y.tab.c"
-#include "main.c"

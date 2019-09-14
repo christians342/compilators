@@ -13,7 +13,7 @@ int main (int a)
   {
   a = 5;
   read a;
-  vm[a] = 55 2;
+  //vm[a] = 55 2;
   print a[55];
 
   print "Digite um numero: \n";

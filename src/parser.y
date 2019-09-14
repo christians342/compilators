@@ -2,6 +2,9 @@
 %{
     #include <stdio.h>
     #include <stdlib.h>
+    #include "lex.yy.h"
+    #include "hash.h"
+    #include "astree.h"
 
     #define SYMBOL_LIT_INT              1
     #define SYMBOL_LIT_REAL             2
@@ -11,7 +14,15 @@
     #define SYMBOL_LIT_STRING           6
     #define SYMBOL_IDENTIFIER           7
 
+    int getLineNumber(void);
+    int yyerror(char*);    
 %}
+
+%union
+{
+        HASH_NODE *symbol;
+        AST *ast;
+}
 
 %token KW_BYTE       
 %token KW_INT        
@@ -36,12 +47,14 @@
 
 %token TK_IDENTIFIER 
 
-%token LIT_INTEGER   
-%token LIT_FLOAT
+%token<symbol> LIT_INTEGER   
+%token<symbol> LIT_FLOAT
 %token LIT_TRUE
 %token LIT_FALSE
 %token LIT_CHAR
 %token LIT_STRING
+
+%type<symbol> exp
 
 %%
 
@@ -168,8 +181,10 @@ expParamRest:
         |
         ;
 
-exp:
-            TK_IDENTIFIER
+exp:    
+            LIT_FLOAT                           {fprintf(stderr, "Id=%s\n", $1->text);}
+         |  LIT_INTEGER                         {fprintf(stderr, "Id=%s\n", $1->text);}
+         |  TK_IDENTIFIER
          |  scalar
          | '(' exp ')'
          |  TK_IDENTIFIER '[' exp ']'
