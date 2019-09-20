@@ -13,9 +13,7 @@
     #define SYMBOL_LIT_CHAR             5
     #define SYMBOL_LIT_STRING           6
     #define SYMBOL_IDENTIFIER           7
-
-    int getLineNumber(void);
-    int yyerror(char*);    
+  
 %}
 
 %union
@@ -45,7 +43,7 @@
 %token OPERATOR_EQ   
 %token OPERATOR_DIF  
 
-%token TK_IDENTIFIER 
+%token<symbol> TK_IDENTIFIER 
 
 %token<symbol> LIT_INTEGER   
 %token<symbol> LIT_FLOAT
@@ -54,7 +52,7 @@
 %token LIT_CHAR
 %token LIT_STRING
 
-%type<symbol> exp
+%type<ast> exp
 
 %%
 
@@ -137,7 +135,7 @@ printList:
         ;
 
 simpleCmd:
-           TK_IDENTIFIER '=' exp 
+           TK_IDENTIFIER '=' exp                        {astreePrint($3, 0);}
         |  TK_IDENTIFIER '[' exp ']' '=' exp 
         |  KW_READ TK_IDENTIFIER
         |  KW_PRINT printList
@@ -151,9 +149,6 @@ fluxControl:
         |  KW_FOR '(' TK_IDENTIFIER ':' exp ',' exp ',' exp ')' cmd
         |  KW_BREAK
         ;
-
-exp
-
 
 cmd:     
            simpleCmd
@@ -182,16 +177,16 @@ expParamRest:
         ;
 
 exp:    
-            LIT_FLOAT                           {fprintf(stderr, "Id=%s\n", $1->text);}
-         |  LIT_INTEGER                         {fprintf(stderr, "Id=%s\n", $1->text);}
-         |  TK_IDENTIFIER
+            LIT_FLOAT                           {$$=0;}
+         |  LIT_INTEGER                         {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+         |  TK_IDENTIFIER                       {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
          |  scalar
          | '(' exp ')'
          |  TK_IDENTIFIER '[' exp ']'
          |  TK_IDENTIFIER '(' expParam ')' 
-         |  exp '+' exp
+         |  exp '+' exp                         {$$=astreeCreate(AST_ADD, 0, $1, $3, 0, 0);}
          |  exp '-' exp
-         |  exp '*' exp
+         |  exp '*' exp                         {$$=astreeCreate(AST_MUL, 0, $1, $3, 0, 0);}
          |  exp '/' exp
          |  exp '>' exp
          |  exp '<' exp
