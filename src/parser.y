@@ -13,6 +13,9 @@
     #define SYMBOL_LIT_CHAR             5
     #define SYMBOL_LIT_STRING           6
     #define SYMBOL_IDENTIFIER           7
+
+    int getLineNumber();
+    int yyerror(char *message);
   
 %}
 
@@ -53,6 +56,7 @@
 %token LIT_STRING
 
 %type<ast> exp
+%type<ast> scalar
 
 %%
 
@@ -75,11 +79,11 @@ type:
         ;
 
 scalar:     
-          LIT_TRUE 
-        | LIT_FALSE
-        | LIT_INTEGER
-        | LIT_FLOAT  
+          LIT_FLOAT                             {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+        | LIT_INTEGER                         {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
         | LIT_CHAR 
+        | LIT_TRUE 
+        | LIT_FALSE
         ;
         
 scalarNoBool:
@@ -177,9 +181,7 @@ expParamRest:
         ;
 
 exp:    
-            LIT_FLOAT                           {$$=0;}
-         |  LIT_INTEGER                         {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
-         |  TK_IDENTIFIER                       {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+            TK_IDENTIFIER                       {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
          |  scalar
          | '(' exp ')'
          |  TK_IDENTIFIER '[' exp ']'

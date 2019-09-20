@@ -13,7 +13,7 @@ AST *astreeCreate(int type, HASH_NODE *symbol, AST *s0, AST *s1, AST *s2, AST *s
 }
 
 void astreePrint(AST *node, int level){
-    if(!node) return;
+    if(node == NULL) return;
 
     for(int i = 0; i < level; ++i){
         fprintf(stderr, "  ");
@@ -22,20 +22,13 @@ void astreePrint(AST *node, int level){
     fprintf(stderr, "AST: ");
     
     switch(node->type){
-        case AST_SYMBOL:
-            fprintf(stderr, "AST_SYMBOL, \n");
-            break;
-        case AST_ADD:
-            fprintf(stderr, "AST_ADD, \n");
-            break;
-        case AST_MUL:
-            fprintf(stderr, "AST_MUL, \n");
-            break;
-        default:
-            break;
+        case AST_SYMBOL: fprintf(stderr, "AST_SYMBOL, \n"); break;
+        case AST_ADD: fprintf(stderr, "AST_ADD, \n"); break;
+        case AST_MUL: fprintf(stderr, "AST_MUL, \n"); break;
+        default: break;
     }
 
-    if(node->symbol){
+    if(node->symbol != NULL){
         fprintf(stderr, "%s", node->symbol->text);
     } else {
         fprintf(stderr, "  ");

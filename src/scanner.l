@@ -56,8 +56,8 @@ ALPHA_NUM [A-Za-z_0-9]
 {ALPHA}{ALPHA_NUM}*             {hashInsert(TK_IDENTIFIER, yytext);  return TK_IDENTIFIER;     } 
 {DIGIT}+                        {yylval.symbol = hashInsert(LIT_INTEGER, yytext);   
                                  return LIT_INTEGER;                                            }
-{DIGIT}*"."{DIGIT}+             {hashInsert(LIT_FLOAT, yytext);      return LIT_FLOAT;         }
-{DIGIT}+"."{DIGIT}*             {hashInsert(LIT_FLOAT, yytext);      return LIT_FLOAT;         }
+{DIGIT}*"."{DIGIT}+             {yylval.symbol = hashInsert(LIT_FLOAT, yytext);      return LIT_FLOAT;         }
+{DIGIT}+"."{DIGIT}*             {yylval.symbol = hashInsert(LIT_FLOAT, yytext);      return LIT_FLOAT;         }
 
 \'([^'\\\n]?|\\.)\'             {hashInsert(LIT_CHAR, yytext);       return LIT_CHAR;          }
 \"([^\"\\\n]|\\.)*\"            {hashInsert(LIT_STRING, yytext);     return LIT_STRING;        }
