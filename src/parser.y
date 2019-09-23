@@ -78,9 +78,9 @@ type:
         | KW_FLOAT
         ;
 
-scalar:     
-          LIT_FLOAT                             {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
-        | LIT_INTEGER                         {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+scalar:    
+           LIT_FLOAT                           {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+        |  LIT_INTEGER                         {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
         | LIT_CHAR 
         | LIT_TRUE 
         | LIT_FALSE
@@ -180,9 +180,12 @@ expParamRest:
         |
         ;
 
-exp:    
-            TK_IDENTIFIER                       {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
-         |  scalar
+exp:        
+            LIT_FLOAT                           {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+         |  LIT_INTEGER                         {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+         |  LIT_CHAR 
+         |  TK_IDENTIFIER                       {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+         |  scalar                              {$$=$1;}                            
          | '(' exp ')'
          |  TK_IDENTIFIER '[' exp ']'
          |  TK_IDENTIFIER '(' expParam ')' 
