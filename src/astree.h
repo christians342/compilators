@@ -8,6 +8,11 @@
 #define AST_SYMBOL 1
 #define AST_ADD 2
 #define AST_MUL 3
+#define AST_SUB 4
+#define AST_DIV 5
+#define AST_VECREAD 6
+#define AST_ASS 7
+#define AST_LCMD 8
 
 #define MAX_SONS 4
 

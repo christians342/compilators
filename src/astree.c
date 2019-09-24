@@ -25,6 +25,11 @@ void astreePrint(AST *node, int level){
         case AST_SYMBOL: fprintf(stderr, "AST_SYMBOL, "); break;
         case AST_ADD: fprintf(stderr, "AST_ADD"); break;
         case AST_MUL: fprintf(stderr, "AST_MUL"); break;
+        case AST_SUB: fprintf(stderr, "AST_SUB"); break;
+        case AST_DIV: fprintf(stderr, "AST_DIV"); break;
+        case AST_VECREAD: fprintf(stderr, "AST_VECREAD, "); break;
+        case AST_ASS: fprintf(stderr, "AST_ASS, "); break;
+        case AST_LCMD: fprintf(stderr, "AST_LCMD"); break;
         default: break;
     }
 

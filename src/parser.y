@@ -57,6 +57,11 @@
 
 %type<ast> exp
 %type<ast> scalar
+%type<ast> cmd
+%type<ast> simpleCmd
+%type<ast> lcmd
+%type<ast> block
+%type<ast> cmdrest
 
 %%
 
@@ -129,7 +134,7 @@ rest:
 //comandos
 
 block:      
-           '{' lcmd '}'
+           '{' lcmd '}'                                 {$$=0;}
         ;
 
 printList: 
@@ -139,7 +144,7 @@ printList:
         ;
 
 simpleCmd:
-           TK_IDENTIFIER '=' exp                        {astreePrint($3, 0);}
+           TK_IDENTIFIER '=' exp                        {$$=astreeCreate(AST_ASS, $1, $3, 0, 0, 0); }
         |  TK_IDENTIFIER '[' exp ']' '=' exp 
         |  KW_READ TK_IDENTIFIER
         |  KW_PRINT printList
@@ -155,18 +160,18 @@ fluxControl:
         ;
 
 cmd:     
-           simpleCmd
-        |  block
-        |  fluxControl
+           simpleCmd                            {astreePrint($1, 0);}
+        |  block                                
+        |  fluxControl                          
         |
         ;           
 
 lcmd:       
-        cmd cmdrest
+        cmd cmdrest                             {$$=astreeCreate(AST_LCMD, 0, $1, $2, 0, 0);}
         ;
 
 cmdrest:    
-        ';' cmd cmdrest
+        ';' cmd cmdrest                         {$$=0;}
         |
         ;
 
@@ -187,12 +192,12 @@ exp:
          |  TK_IDENTIFIER                       {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
          |  scalar                              {$$=$1;}                            
          | '(' exp ')'
-         |  TK_IDENTIFIER '[' exp ']'
+         |  TK_IDENTIFIER '[' exp ']'           {$$=astreeCreate(AST_VECREAD, $1, $3, 0, 0, 0);}
          |  TK_IDENTIFIER '(' expParam ')' 
          |  exp '+' exp                         {$$=astreeCreate(AST_ADD, 0, $1, $3, 0, 0);}
-         |  exp '-' exp
+         |  exp '-' exp                         {$$=astreeCreate(AST_SUB, 0, $1, $3, 0, 0);}
          |  exp '*' exp                         {$$=astreeCreate(AST_MUL, 0, $1, $3, 0, 0);}
-         |  exp '/' exp
+         |  exp '/' exp                         {$$=astreeCreate(AST_DIV, 0, $1, $3, 0, 0);}
          |  exp '>' exp
          |  exp '<' exp
          |  exp 'v' exp
