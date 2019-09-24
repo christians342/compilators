@@ -63,6 +63,9 @@
 %type<ast> block
 %type<ast> cmdrest
 
+%left '+' '-'
+%left '*' '/'
+
 %%
 
 program:   
@@ -96,7 +99,6 @@ scalarNoBool:
         | LIT_FLOAT  
         | LIT_CHAR 
         ;
-
 
 globaldec: 
            type TK_IDENTIFIER '=' scalar ';'
