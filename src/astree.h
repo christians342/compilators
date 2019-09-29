@@ -64,5 +64,7 @@ typedef struct astree_node{
 
 AST *astreeCreate(int type, HASH_NODE *symbol, AST *s0, AST *s1, AST *s2, AST *s3);
 void astreePrint(AST *node, int level);
+void decompilation(AST* node, FILE *output);
+AST *getRoot();
 
 #endif

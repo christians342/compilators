@@ -71,7 +71,6 @@
 %type<ast> scalarNoBool
 %type<ast> arrayInit
 %type<ast> listLit
-%type<ast> parameter
 %type<ast> parameterList
 %type<ast> rest
 %type<ast> printList
@@ -88,7 +87,7 @@
 
 
 program:   
-          ldecl                            {$$=$1; astreePrint($1, 0);}       
+          ldecl                            {root = $1; astreePrint($1, 0);}       
         ;
 
 ldecl:
@@ -135,12 +134,9 @@ listLit:
         |                                  {$$=0;}
         ;
 
-parameter:    
-           type TK_IDENTIFIER              {$$=astreeCreate(AST_PARAM, $2, $1, 0, 0, 0);}
-        ;
 
 parameterList:    
-           parameter rest                  {$$=astreeCreate(AST_LPARAM, 0, $1, $2, 0, 0);}
+           type TK_IDENTIFIER rest         {$$=astreeCreate(AST_LPARAM,$2,$1,$3,0,0);}
         |                                  {$$=0;}
         ;
 
@@ -151,11 +147,11 @@ rest:
 
 
 block:      
-           '{' lcmd '}'                    {$$=0;}
+           '{' lcmd '}'                    {$$=astreeCreate(AST_BLOCK, 0, $2, 0, 0, 0);}
         ;
 
 printList: 
-            LIT_STRING printList          {$$=astreeCreate(AST_LPRINT, 0, astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0), $2, 0, 0);}   
+            LIT_STRING printList          {$$=astreeCreate(AST_LPRINT, $1, $2, 0, 0, 0); }   
         |   exp printList                 {$$=astreeCreate(AST_EPRINT, 0, $1, $2, 0, 0);}
         |                                 {$$=0;}
         ;
@@ -163,7 +159,7 @@ printList:
 cmd:     
            TK_IDENTIFIER '=' exp                        {$$=astreeCreate(AST_ASS, $1, $3, 0, 0, 0); }
         |  TK_IDENTIFIER '[' exp ']' '=' exp            {$$=astreeCreate(AST_VECEXP, $1, $3, $6, 0, 0);}
-        |  KW_READ TK_IDENTIFIER                        {$$=astreeCreate(AST_READ, 0, astreeCreate(AST_SYMBOL, $2, 0, 0, 0, 0), 0, 0, 0);}
+        |  KW_READ TK_IDENTIFIER                        {$$=astreeCreate(AST_READ, $2, 0, 0, 0, 0); }
         |  KW_PRINT printList                           {$$=astreeCreate(AST_PRINT, 0, $2, 0, 0, 0);}
         |  KW_RETURN exp                                {$$=astreeCreate(AST_RET, 0, $2, 0, 0, 0);}
         |  KW_IF '(' exp ')' KW_THEN cmd KW_ELSE cmd    {$$=astreeCreate(AST_IFELSE, 0, $3, $6, $8, 0);}
@@ -171,7 +167,7 @@ cmd:
         |  KW_WHILE '(' exp ')' cmd                     {$$=astreeCreate(AST_WHILE, 0, $3, $5, 0, 0);}
         |  KW_FOR '(' TK_IDENTIFIER ':' exp ',' exp ',' exp ')' cmd {$$=astreeCreate(AST_FOR, $3, $5, $7, $9, $11);}
         |  KW_BREAK                                     {$$=astreeCreate(AST_BREAK, 0, 0, 0, 0, 0);}
-        |  block                                        {$$=astreeCreate(AST_BLOCK, 0, $1, 0, 0, 0);}
+        |  block                                        {$$=$1;}
         |                                               {$$=0;}
         ;           
 
@@ -195,11 +191,12 @@ expParamRest:
         ;
 
 exp:        
-           LIT_FLOAT                           {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+           TK_IDENTIFIER                       {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+        |  LIT_FLOAT                           {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
         |  LIT_INTEGER                         {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
         |  LIT_CHAR                            {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
-        |  TK_IDENTIFIER                       {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
-        |  scalar                              {$$=$1;}                            
+        |  LIT_TRUE                            {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+        |  LIT_FALSE                           {$$=astreeCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
         | '(' exp ')'                          {$$=astreeCreate(AST_EXP, 0, $2, 0, 0, 0);}
         |  TK_IDENTIFIER '[' exp ']'           {$$=astreeCreate(AST_VECREAD, $1, $3, 0, 0, 0);}
         |  TK_IDENTIFIER '(' expParam ')'      {$$=astreeCreate(AST_IDEXP, $1, $3, 0, 0, 0);}
@@ -222,5 +219,9 @@ exp:
 int yyerror(char *msg){
     fprintf(stderr, "Syntax error at line %d! \n", getLineNumber());
     exit(3);
+}
+
+AST* getRoot(){
+    return root;
 }
 

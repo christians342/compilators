@@ -1,6 +1,7 @@
 // UFRGS - Compiladores - Marcelo Johann - 2019/2
 
-byte teste(int a, int b) 
+
+int teste(int a, int b) 
 {
   while(a > b){
     a = a - 1;
