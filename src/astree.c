@@ -300,10 +300,10 @@ void decompilation(AST *node, FILE *file) {
 			break;
 
 		case AST_LPARAM:
-            decompilation(node->son[0], file);
-            printf("LPARAM");
-            printSymbol(node, file);
             decompilation(node->son[1], file);
+            printf("LPARAM");
+            decompilation(node->son[0], file);
+            decompilation(node->son[2], file);
             break;
 
 		case AST_RPARAM:

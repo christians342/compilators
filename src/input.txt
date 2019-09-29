@@ -1,18 +1,19 @@
 // UFRGS - Compiladores - Marcelo Johann - 2019/2
 
 
-int teste(int a, int b) 
+int teste(int x, int k) 
 {
-  while(a > b){
-    a = a - 1;
-    b = b + 1;
+  while(x > k){
+    x = x - 1;
+    k = k + 1;
+    
   }
 }
 
 
 int a = 0;
 int i = 0;
-int main ()
+int main (byte a)
 {
   a = a+i*2+4+f[5+2];
   b = a + 2;

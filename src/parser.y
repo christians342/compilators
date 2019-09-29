@@ -79,6 +79,8 @@
 %type<ast> program
 
 
+%left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_DIF
+%left 'v' '.' '~'
 %left '+' '-'
 %left '*' '/'
 
@@ -136,7 +138,7 @@ listLit:
 
 
 parameterList:    
-           type TK_IDENTIFIER rest         {$$=astreeCreate(AST_LPARAM,$2,$1,$3,0,0);}
+           type TK_IDENTIFIER rest         {$$=astreeCreate(AST_LPARAM,0,astreeCreate(AST_SYMBOL, $2, 0, 0, 0, 0),$1,$3,0);}
         |                                  {$$=0;}
         ;
 
