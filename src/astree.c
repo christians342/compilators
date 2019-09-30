@@ -366,7 +366,6 @@ void decompilation(AST *node, FILE *file) {
             fprintf(file, "%s [", node->symbol->text);
             decompilation(node->son[0], file);
             fprintf(file, "] ");
-            decompilation(node->son[1], file);
             break;
 	}
 
