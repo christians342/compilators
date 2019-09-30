@@ -101,8 +101,7 @@ void decompilation(AST *node, FILE *file) {
 	switch(node->type){
 
 		case AST_SYMBOL:
-			printf("AST_SYMBOL");
-            printSymbol(node, file);
+            fprintf(file, " %s", node->symbol->text);
             break;
 
         case AST_ADD:
@@ -183,9 +182,7 @@ void decompilation(AST *node, FILE *file) {
             break;
 
         case AST_ASS:
-        	printf("AST_ASS");
-			printSymbol(node, file);
-           	fprintf(file," = "); 
+			fprintf(file, " %s = ", node->symbol->text);
            	decompilation(node->son[0], file);
            	break;
 
@@ -217,15 +214,13 @@ void decompilation(AST *node, FILE *file) {
             break;
 
         case AST_FOR:
-        	fprintf(file, "for(");
-            printf("FOR");
-            printSymbol(node, file);
+            fprintf(file, "for (%s:", node->symbol->text);
             decompilation(node->son[0], file);
             fprintf(file, ", ");
             decompilation(node->son[1], file);
             fprintf(file, ", ");
             decompilation(node->son[2], file);
-            fprintf(file, ")");
+            fprintf(file, ")\n");
             decompilation(node->son[3], file);
             break;
 
@@ -274,20 +269,16 @@ void decompilation(AST *node, FILE *file) {
 
 		case AST_FUNC:
             decompilation(node->son[0], file);
-            printf("AST_FUNC");
-            fprintf(file, "(");
-            printSymbol(node, file); //nome função
+            fprintf(file, "%s (", node->symbol->text);
             decompilation(node->son[1], file);
             fprintf(file, ")");
             decompilation(node->son[2], file);
-            fprintf(file, ";\n");
+            fprintf(file, "\n");
         	break;
 
 		case AST_ATRIB:
             decompilation(node->son[0], file);
-            printf("AST_ATRIB");
-            printSymbol(node, file);
-            fprintf(file, " = ");
+            fprintf(file, " %s = ", node->symbol->text);
             decompilation(node->son[1], file);
             fprintf(file, ";\n");
             break;
@@ -301,7 +292,6 @@ void decompilation(AST *node, FILE *file) {
 
 		case AST_LPARAM:
             decompilation(node->son[1], file);
-            printf("LPARAM");
             decompilation(node->son[0], file);
             decompilation(node->son[2], file);
             break;
@@ -322,15 +312,14 @@ void decompilation(AST *node, FILE *file) {
             break;
 
         case AST_READ:
-           	printf("AST_READ");
            	fprintf(file, "read ");
-            printSymbol(node, file);
+            fprintf(file, " %s ", node->symbol->text);
             break; 
 
 		case AST_IDEXP:
-            fprintf(file, "%s(", node->symbol->text);
+            fprintf(file, "%s (", node->symbol->text);
             decompilation(node->son[0], file);
-            fprintf(file, ")");
+            fprintf(file, " )");
             break;
 
         case AST_EPARAM:
@@ -343,21 +332,13 @@ void decompilation(AST *node, FILE *file) {
             decompilation(node->son[0], file);
             break;
 
-        case AST_VECREAD:
-            fprintf(file, "%s[", node->symbol->text);
-            decompilation(node->son[0], file);
-            fprintf(file, "] = ");
-            decompilation(node->son[1], file);
-            break;
-
         case AST_PRINT:
         	fprintf(file, "print ");
         	decompilation(node->son[0], file);
         	break;
 
 		case AST_LPRINT: 
-            printf("LPRINT");
-			printSymbol(node, file); 
+			fprintf(file, " %s ", node->symbol->text);
 			decompilation(node->son[0], file);			
 			break;
 
@@ -367,22 +348,25 @@ void decompilation(AST *node, FILE *file) {
 			break;
 
 		case AST_VECEXP: 
-            decompilation(node->son[0], file);
-            printf("VECEXP");
-			printSymbol(node, file);
-			fprintf(file, "[ ");
-			decompilation(node->son[1], file);
+			fprintf(file, " %s [", node->symbol->text);
+			decompilation(node->son[0], file);
 			fprintf(file, "] = ");
-			decompilation(node->son[2], file);
+			decompilation(node->son[1], file);
 
         case AST_VEC:
             decompilation(node->son[0], file);
-            fprintf(file, "[");
-            printSymbol(node, file);
+            fprintf(file, " %s [", node->symbol->text);
             decompilation(node->son[1], file);
             fprintf(file, "]");
             decompilation(node->son[2], file);
             fprintf(file, ";\n");
+            break;
+
+         case AST_VECREAD:
+            fprintf(file, "%s [", node->symbol->text);
+            decompilation(node->son[0], file);
+            fprintf(file, "] ");
+            decompilation(node->son[1], file);
             break;
 	}
 

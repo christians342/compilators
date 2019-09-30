@@ -38,8 +38,8 @@ ALPHA_NUM [A-Za-z_0-9]
 "=="                                                    return OPERATOR_EQ;            
 "!="                                                    return OPERATOR_DIF;           
 
-"TRUE"                                                  return LIT_TRUE;               
-"FALSE"                                                 return LIT_FALSE;              
+"TRUE"                                                  {yylval.symbol =  hashInsert(LIT_TRUE, "TRUE");  return LIT_TRUE;}              
+"FALSE"                                                 {yylval.symbol =  hashInsert(LIT_FALSE, "FALSE");  return LIT_FALSE;}              
 
 [v\,\;\:\(\)\[\]\{\}\+\-\*\/\<\>\=\.\~\&\$\#]           return yytext[0];        
 
@@ -53,7 +53,7 @@ ALPHA_NUM [A-Za-z_0-9]
 <COMMENT>"\n"                                           ++lineNumber;                  
 <COMMENT>.                      
 
-{ALPHA}{ALPHA_NUM}*             {hashInsert(TK_IDENTIFIER, yytext);  return TK_IDENTIFIER;     } 
+{ALPHA}{ALPHA_NUM}*             {yylval.symbol =  hashInsert(TK_IDENTIFIER, yytext);  return TK_IDENTIFIER;} 
 {DIGIT}+                        {yylval.symbol = hashInsert(LIT_INTEGER, yytext);   
                                  return LIT_INTEGER;                                           }
 {DIGIT}*"."{DIGIT}+             {yylval.symbol = hashInsert(LIT_FLOAT, yytext);      
@@ -61,8 +61,8 @@ ALPHA_NUM [A-Za-z_0-9]
 {DIGIT}+"."{DIGIT}*             {yylval.symbol = hashInsert(LIT_FLOAT, yytext);      
                                 return LIT_FLOAT;                                              }
 
-\'([^'\\\n]?|\\.)\'             {hashInsert(LIT_CHAR, yytext);       return LIT_CHAR;          }
-\"([^\"\\\n]|\\.)*\"            {hashInsert(LIT_STRING, yytext);     return LIT_STRING;        }
+\'([^'\\\n]?|\\.)\'             {yylval.symbol = hashInsert(LIT_CHAR, yytext);       return LIT_CHAR;          }
+\"([^\"\\\n]|\\.)*\"            {yylval.symbol = hashInsert(LIT_STRING, yytext);     return LIT_STRING;        }
 
 %%
 

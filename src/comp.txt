@@ -8,8 +8,6 @@
  int  mat [ 10];
  int main (){
  a =  5;
- v1 [ a] =  55 a v1 [ 55];
-;
 print v1 [ 55] ;
 print  "Digite um numero: \n" ;
 read  a ;
