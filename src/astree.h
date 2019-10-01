@@ -52,7 +52,8 @@
 #define AST_LDECL 45
 #define AST_VEC 46
 #define AST_LLIT 47
-#define AST_PRINT 48
+#define AST_FIRST_LLIT 48
+#define AST_PRINT 49
 
 #define MAX_SONS 4
 

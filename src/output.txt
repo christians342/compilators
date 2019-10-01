@@ -4,11 +4,11 @@
  int  i =  0;
  long  l =  0;
  float  f =  0.0;
- int  v1 [ 10] :  0 ;
+ int  v1 [ 10] :  1 0 0 0 0 0 0 0 0 0;
  int  mat [ 10];
  int main (){
  a =  5;
- v1 [ a] =  55 a v1 [ 55];
+ v1 [ a] = ( 2 +  2) a v1 [( 2 +  2)];
 ;
 print v1 [ 55] ;
 print  "Digite um numero: \n" ;

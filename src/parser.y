@@ -127,7 +127,7 @@ scalarNoBool:
       
 
 arrayInit: 
-           ':' scalarNoBool listLit        {$$=astreeCreate(AST_LIT, 0, $2, $3, 0, 0);}
+           ':' scalarNoBool listLit        {$$=astreeCreate(AST_FIRST_LLIT, 0, $2, $3, 0, 0);}
         |                                  {$$=0;}
         ;
 
