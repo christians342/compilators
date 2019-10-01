@@ -69,6 +69,8 @@ void astreePrint(AST *node, int level){
 		case AST_DIF: fprintf(stderr, "AST_DIF"); break;
 		case AST_PRINT: fprintf(stderr, "AST_PRINT"); break;
 		case AST_VEC: fprintf(stderr, "AST_VEC, "); break;
+        case AST_FIRST_LLIT: fprintf(stderr, "AST_FIRST_LLIT"); break;
+        case AST_LLIT: fprintf(stderr, "AST_FIRST_LLIT"); break;
     	default: break;
     }
 
@@ -352,6 +354,7 @@ void decompilation(AST *node, FILE *file) {
 			decompilation(node->son[0], file);
 			fprintf(file, "] = ");
 			decompilation(node->son[1], file);
+            break;
 
         case AST_VEC:
             decompilation(node->son[0], file);
