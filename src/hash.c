@@ -55,11 +55,15 @@ void hashPrint(void){
             fprintf(stderr," Table[%d] has %s\n",i,Table[i]->text);
 }
 
-void hashCheckUndeclared(void){
+int hashCheckUndeclared(void){
     int i;
     HASH_NODE *node;
+    int error = 0;
     for(i=0; i<HASH_SIZE; ++i)
         for(node=Table[i]; node; node = node->next)
-            if(node->type == SYMBOL_IDENTIFIER)
+            if(node->type == SYMBOL_IDENTIFIER){
                 fprintf(stderr,"Undeclared identifier %s\n", Table[i]->text);
+                error++;
+            }
+    return error;
 }

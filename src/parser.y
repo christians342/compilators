@@ -83,7 +83,8 @@ program:
           ldecl                                                 {root = $1; 
                                                                 astreePrint($1, 0);
                                                                 checkAndSetTypes($1);
-                                                                checkUndeclared();}    
+                                                                checkUndeclared();
+                                                                fprintf(stderr, "%d semantic errors.\n", getSemanticErrors());}    
         ;
 
 ldecl:

@@ -3,3 +3,4 @@
 
 void checkAndSetTypes(AST *node);
 void checkUndeclared();
+int getSemanticErrors();

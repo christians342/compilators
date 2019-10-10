@@ -13,6 +13,9 @@
 #define SYMBOL_VECTOR       1002
 #define SYMBOL_FUNC         1003
 
+#define DATATYPE_INT        2001
+#define DATATYPE_FLOAT      2002
+
 typedef struct hash_node{
     int type;
     char *text;
@@ -26,6 +29,6 @@ int hashAddress(char *text);
 HASH_NODE* hashFind(char *text);
 HASH_NODE* hashInsert(int type, char *text);
 void hashPrint(void);
-void hashCheckUndeclared(void);
+int hashCheckUndeclared(void);
 
 #endif

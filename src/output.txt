@@ -1,18 +1,2 @@
- bool  b =  FALSE;
- int  a =  0;
  int main (){
-print  "Digite um numero: \n" ;
-read  a ;
-for (l: 1,  10,  1)
-print  "." ;
-print  "\n" ;
-if( a ==  15 v  a ==  17) then 
-print  "A igual a 15 ou 17\n" ;
-if( i ==  100) then 
-{
-print  "Nao tem como isso...\n" ;
-break;
-}else
-print  "OK!\n" }
- int incn ( int  x,  int  n){
-return  x +  n}
+}
