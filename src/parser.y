@@ -5,14 +5,7 @@
     #include "lex.yy.h"
     #include "hash.h"
     #include "astree.h"
-
-    #define SYMBOL_LIT_INT              1
-    #define SYMBOL_LIT_REAL             2
-    #define SYMBOL_LIT_TRUE             3
-    #define SYMBOL_LIT_FALSE            4
-    #define SYMBOL_LIT_CHAR             5
-    #define SYMBOL_LIT_STRING           6
-    #define SYMBOL_IDENTIFIER           7
+    #include "semantic.h"
 
     int getLineNumber();
     int yyerror(char *message);
@@ -86,10 +79,11 @@
 
 %%
 
-
-
 program:   
-          ldecl                            {root = $1; astreePrint($1, 0);}       
+          ldecl                                                 {root = $1; 
+                                                                astreePrint($1, 0);
+                                                                checkAndSetTypes($1);
+                                                                checkUndeclared();}    
         ;
 
 ldecl:

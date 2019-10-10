@@ -53,12 +53,12 @@ ALPHA_NUM [A-Za-z_0-9]
 <COMMENT>"\n"                                           ++lineNumber;                  
 <COMMENT>.                      
 
-{ALPHA}{ALPHA_NUM}*             {yylval.symbol =  hashInsert(TK_IDENTIFIER, yytext);  return TK_IDENTIFIER;} 
-{DIGIT}+                        {yylval.symbol = hashInsert(LIT_INTEGER, yytext);   
+{ALPHA}{ALPHA_NUM}*             {yylval.symbol =  hashInsert(SYMBOL_IDENTIFIER, yytext);  return TK_IDENTIFIER;} 
+{DIGIT}+                        {yylval.symbol = hashInsert(SYMBOL_LITINT, yytext);   
                                  return LIT_INTEGER;                                           }
-{DIGIT}*"."{DIGIT}+             {yylval.symbol = hashInsert(LIT_FLOAT, yytext);      
+{DIGIT}*"."{DIGIT}+             {yylval.symbol = hashInsert(SYMBOL_LITREAL, yytext);      
                                 return LIT_FLOAT;                                              }
-{DIGIT}+"."{DIGIT}*             {yylval.symbol = hashInsert(LIT_FLOAT, yytext);      
+{DIGIT}+"."{DIGIT}*             {yylval.symbol = hashInsert(SYMBOL_LITREAL, yytext);      
                                 return LIT_FLOAT;                                              }
 
 \'([^'\\\n]?|\\.)\'             {yylval.symbol = hashInsert(LIT_CHAR, yytext);       return LIT_CHAR;          }
