@@ -15,9 +15,11 @@
 
 #define DATATYPE_INT        2001
 #define DATATYPE_FLOAT      2002
+#define DATATYPE_BOOL       2003
 
 typedef struct hash_node{
     int type;
+    int datatype;
     char *text;
     struct hash_node *next;
 

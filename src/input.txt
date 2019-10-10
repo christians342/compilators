@@ -1,7 +1,10 @@
 // UFRGS - Compiladores - Marcelo Johann - 2019/2
 
 
-
+int a = 0;
 
 int main(){
+
+  a = 78 + 1;
+
 }
