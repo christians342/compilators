@@ -8,14 +8,14 @@ int getSemanticErrors(){
 void checkAndSetTypes(AST *node){
     if(!node) return;
 
-    if(node->type == AST_LDECL || node->type == AST_FUNC){
+    if(node->type == AST_VARDEC || node->type == AST_FUNC){
         if(node->symbol){
             if(node->symbol->type != SYMBOL_IDENTIFIER){
                 fprintf(stderr, "Semantic ERROR: Symbol %s already declared.\n", node->symbol->text);
                 semanticErrors++;
             }
             
-            if(node->type == AST_LDECL)
+            if(node->type == AST_VARDEC)
                 node->symbol->type = SYMBOL_SCALAR;
             if(node->type == AST_FUNC)
                 node->symbol->type = SYMBOL_FUNC;

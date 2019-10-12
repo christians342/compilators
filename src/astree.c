@@ -37,7 +37,7 @@ void astreePrint(AST *node, int level){
 		case AST_FLOAT: fprintf(stderr, "AST_FLOAT"); break;
     	case AST_EXP: fprintf(stderr, "AST_EXP"); break;	
 		case AST_FUNC: fprintf(stderr, "AST_FUNC"); break;
-		case AST_ATRIB: fprintf(stderr, "AST_ATRIB"); break;
+		case AST_VARDEC: fprintf(stderr, "AST_VARDEC"); break;
 		case AST_LIT: fprintf(stderr, "AST_LIT"); break;
 		case AST_PARAM: fprintf(stderr, "AST_PARAM"); break;
 		case AST_LPARAM: fprintf(stderr, "AST_LPARAM"); break;
@@ -278,7 +278,7 @@ void decompilation(AST *node, FILE *file) {
             fprintf(file, "\n");
         	break;
 
-		case AST_ATRIB:
+		case AST_VARDEC:
             decompilation(node->son[0], file);
             fprintf(file, " %s = ", node->symbol->text);
             decompilation(node->son[1], file);

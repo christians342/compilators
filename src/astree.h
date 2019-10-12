@@ -20,7 +20,7 @@
 #define AST_FLOAT 13
 #define AST_EXP 14
 #define AST_FUNC 15
-#define AST_ATRIB 16
+#define AST_VARDEC 16
 #define AST_LIT 17
 #define AST_PARAM 18
 #define AST_LPARAM 19

@@ -95,7 +95,7 @@ ldecl:
 
 decl:   
           type TK_IDENTIFIER '(' parameterList ')' cmd         {$$=astreeCreate(AST_FUNC, $2, $1, $4, $6, 0);}    
-        | type TK_IDENTIFIER '=' scalar ';'                    {$$=astreeCreate(AST_ATRIB, $2, $1, $4, 0, 0);}
+        | type TK_IDENTIFIER '=' scalar ';'                    {$$=astreeCreate(AST_VARDEC, $2, $1, $4, 0, 0);}
         | type TK_IDENTIFIER '[' LIT_INTEGER ']' arrayInit ';' {$$=astreeCreate(AST_VEC, $2, $1, astreeCreate(AST_SYMBOL, $4, 0, 0, 0, 0), $6, 0);}
         ; 
 
