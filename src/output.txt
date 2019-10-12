@@ -1,4 +1,7 @@
  int  a =  0;
+ int  a =  0;
  int main ( int  a){
  a =  78 +  1;
+}
+ int main (){
 }

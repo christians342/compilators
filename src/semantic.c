@@ -11,7 +11,7 @@ void checkAndSetTypes(AST *node){
     if(node->type == AST_VARDEC || node->type == AST_FUNC){
         if(node->symbol){
             if(node->symbol->type != SYMBOL_IDENTIFIER){
-                fprintf(stderr, "Semantic ERROR: Symbol %s already declared.\n", node->symbol->text);
+                fprintf(stderr, "Semantic ERROR: Symbol %s already declared at line %d.\n", node->symbol->text, node->line + 1);
                 semanticErrors++;
             }
             
