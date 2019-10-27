@@ -6,10 +6,10 @@
 #include "hash.h"
 
 #define AST_SYMBOL 1
-#define AST_ADD 2
-#define AST_MUL 3
-#define AST_SUB 4
-#define AST_DIV 5
+#define AST_ADD 2 //*
+#define AST_MUL 3 //*
+#define AST_SUB 4 //*
+#define AST_DIV 5 //*
 #define AST_VECREAD 6
 #define AST_ASS 7
 #define AST_LCMD 8
@@ -40,15 +40,15 @@
 #define AST_EPARAM 33
 #define AST_EPARAMREST 34
 #define AST_IDEXP 35
-#define AST_GREATER 36
-#define AST_LESSER 37
-#define AST_OR 38
-#define AST_AND 39
-#define AST_NOT 40
-#define AST_LE 41
-#define AST_GE 42
-#define AST_EQUAL 43
-#define AST_DIF 44
+#define AST_GREATER 36 //*
+#define AST_LESSER 37 //*
+#define AST_OR 38 //*
+#define AST_AND 39 //*
+#define AST_NOT 40 //*
+#define AST_LE 41 //*
+#define AST_GE 42 //*
+#define AST_EQUAL 43 //*
+#define AST_DIF 44 //*
 #define AST_LDECL 45
 #define AST_VEC 46
 #define AST_LLIT 47

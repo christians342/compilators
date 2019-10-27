@@ -17,6 +17,7 @@
 #define DATATYPE_FLOAT      2002
 #define DATATYPE_BOOL       2003
 #define DATATYPE_BYTE       2004
+#define DATATYPE_LONG       2005
 #define DATATYPE_ERROR      3000
 
 typedef struct hash_node{

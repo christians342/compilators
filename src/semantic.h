@@ -5,3 +5,4 @@ void checkAndSetTypes(AST *node);
 void checkOperands(AST *node);
 void checkUndeclared();
 int getSemanticErrors();
+void checkSemantics(AST *node);
