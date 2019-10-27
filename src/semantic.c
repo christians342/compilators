@@ -187,6 +187,15 @@ void checkOperands(AST *node) {
                 node->type = DATATYPE_ERROR;
 
             }
+            break;
+
+        case AST_READ:
+            if(node->symbol->type != SYMBOL_SCALAR){
+                fprintf(stderr,"Semantic ERROR in line %d. Read command expected scalar.\n", node->line + 1);
+                semanticErrors++;
+                node->type = DATATYPE_ERROR;
+            }
+
     }
 
     for(int i = 0; i < MAX_SONS; i++){
