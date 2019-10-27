@@ -16,6 +16,8 @@
 #define DATATYPE_INT        2001
 #define DATATYPE_FLOAT      2002
 #define DATATYPE_BOOL       2003
+#define DATATYPE_BYTE       2004
+#define DATATYPE_ERROR      3000
 
 typedef struct hash_node{
     int type;
