@@ -61,8 +61,8 @@ ALPHA_NUM [A-Za-z_0-9]
 {DIGIT}+"."{DIGIT}*             {yylval.symbol = hashInsert(SYMBOL_LITREAL, yytext);      
                                 return LIT_FLOAT;                                              }
 
-\'([^'\\\n]?|\\.)\'             {yylval.symbol = hashInsert(LIT_CHAR, yytext);       return LIT_CHAR;          }
-\"([^\"\\\n]|\\.)*\"            {yylval.symbol = hashInsert(LIT_STRING, yytext);     return LIT_STRING;        }
+\'([^'\\\n]?|\\.)\'             {yylval.symbol = hashInsert(SYMBOL_LITCHAR, yytext);       return LIT_CHAR;          }
+\"([^\"\\\n]|\\.)*\"            {yylval.symbol = hashInsert(SYMBOL_LITSTRING, yytext);     return LIT_STRING;        }
 
 %%
 

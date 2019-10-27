@@ -1,8 +1,15 @@
 #include "semantic.h"
 
+
 int semanticErrors = 0;
 int getSemanticErrors(){
     return semanticErrors;
+}
+
+int isBool(AST* node) {
+    if(node->symbol->datatype == DATATYPE_BOOL)
+        return 1;
+    return 0;
 }
 
 int isNumeric(AST* node) {
@@ -27,14 +34,13 @@ int isVectorType(AST* node){
 }
 
 void setSymbolTypes(AST *node){
-
     if(node->type == AST_VARDEC)
         node->symbol->type = SYMBOL_SCALAR;
 
     if(node->type == AST_FUNC)
         node->symbol->type = SYMBOL_FUNC; 
 
-    if(node->type == AST_VEC)
+    if(isVectorType(node))
         node->symbol->type = SYMBOL_VECTOR;
 }
 
@@ -54,6 +60,7 @@ void setDataTypes(AST *node){
 
     if(node->son[0]->type == AST_BOOL)
         node->symbol->datatype = DATATYPE_BOOL;
+
 }
 
 void checkAndSetTypes(AST *node){
@@ -121,7 +128,7 @@ void checkOperands(AST *node) {
         case AST_GE:
             node->symbol->datatype = DATATYPE_BOOL;
             if(!isNumeric(node->son[0]) || !isNumeric(node->son[1])) {
-                fprintf(stderr,"Semantic ERROR in line %d. Operators must be int, byte or float. \n", node->line + 1);
+                fprintf(stderr,"Semantic ERROR in line %d. Logic operation. Operands must be int, byte, float or long. \n", node->line + 1);
                 semanticErrors++;
                 node->symbol->datatype = DATATYPE_ERROR;
             }            
@@ -130,11 +137,10 @@ void checkOperands(AST *node) {
         case AST_EQUAL:
         case AST_DIF:
            node->symbol->datatype = DATATYPE_BOOL;
-           if ((node->son[0]->symbol->datatype == DATATYPE_BOOL && node->son[1]->symbol->datatype != DATATYPE_BOOL) ||
-               (node->son[1]->symbol->datatype == DATATYPE_BOOL && node->son[0]->symbol->datatype != DATATYPE_BOOL) ||
+           if ((isBool(node->son[0]) && !isBool(node->son[1])) || (isBool(node->son[1]) && !isBool(node->son[0])) ||
                (!areNumericEquivalents(node->son[0], node->son[1]))){
 
-               fprintf(stderr, "Semantic ERROR in line %d. Operators are not compatible. \n", node->line + 1);
+               fprintf(stderr, "Semantic ERROR in line %d. Logic operation. Operands are not compatible. \n", node->line + 1);
                semanticErrors++;
                node->symbol->datatype = DATATYPE_ERROR;
             }
@@ -143,8 +149,8 @@ void checkOperands(AST *node) {
 
         case AST_NOT:
             node->symbol->datatype = DATATYPE_BOOL;
-            if(node->son[0]->symbol->datatype != DATATYPE_BOOL){
-                fprintf(stderr,"Semantic ERROR in line %d. Operator must be bool.\n", node->line + 1);
+            if(!isBool(node->son[0])){
+                fprintf(stderr,"Semantic ERROR in line %d. Logic operation. Operand must be bool.\n", node->line + 1);
                 semanticErrors++;
                 node->symbol->datatype = DATATYPE_ERROR;
             }
@@ -154,13 +160,33 @@ void checkOperands(AST *node) {
         case AST_AND:
         case AST_OR:
             node->symbol->datatype = DATATYPE_BOOL;
-            if(node->son[0]->symbol->datatype != DATATYPE_BOOL || node->son[1]->symbol->datatype != DATATYPE_BOOL){   
-                fprintf(stderr,"Semantic ERROR in line %d. Operators must be bool.\n", node->line + 1);
+            if(!isBool(node->son[0]) || !isBool(node->son[1])){   
+                fprintf(stderr,"Semantic ERROR in line %d. Logic operation. Operands must be bool.\n", node->line + 1);
                 semanticErrors++;
                 node->type = DATATYPE_ERROR;
             }
         
             break;
+
+        case AST_WHILE:
+        case AST_IF:
+        case AST_IFELSE:
+            node->symbol->datatype = DATATYPE_BOOL;
+            if(!isBool(node->son[0])){
+                fprintf(stderr,"Semantic ERROR in line %d. Conditional operation. Operand must be bool.\n", node->line + 1);
+                semanticErrors++;
+                node->type = DATATYPE_ERROR;
+
+            }
+            break;
+
+        case AST_PRINT:
+            if(node->son[0]->symbol->type != SYMBOL_LITSTRING){
+                fprintf(stderr,"Semantic ERROR in line %d. Print command expected string.\n", node->line + 1);
+                semanticErrors++;
+                node->type = DATATYPE_ERROR;
+
+            }
     }
 
     for(int i = 0; i < MAX_SONS; i++){
@@ -169,9 +195,9 @@ void checkOperands(AST *node) {
 }
 
 void checkSemantics(AST *node) {
-    fprintf(stderr, "Checking semantics\n");
+    fprintf(stderr, "---Checking semantics---\n");
     checkAndSetTypes(node);
-    //checkUndeclared();    
-    //checkOperands(node);
+    checkUndeclared();    
+    checkOperands(node);
     //checkDataTypes(node);
 }

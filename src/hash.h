@@ -8,6 +8,8 @@
 #define SYMBOL_IDENTIFIER   1
 #define SYMBOL_LITINT       2
 #define SYMBOL_LITREAL      3
+#define SYMBOL_LITCHAR      4
+#define SYMBOL_LITSTRING    5
 
 #define SYMBOL_SCALAR       1001
 #define SYMBOL_VECTOR       1002
@@ -18,6 +20,7 @@
 #define DATATYPE_BOOL       2003
 #define DATATYPE_BYTE       2004
 #define DATATYPE_LONG       2005
+#define DATATYPE_STRING     2006
 #define DATATYPE_ERROR      3000
 
 typedef struct hash_node{
