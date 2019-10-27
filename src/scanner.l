@@ -38,8 +38,8 @@ ALPHA_NUM [A-Za-z_0-9]
 "=="                                                    return OPERATOR_EQ;            
 "!="                                                    return OPERATOR_DIF;           
 
-"TRUE"                                                  {yylval.symbol =  hashInsert(LIT_TRUE, "TRUE");  return LIT_TRUE;}              
-"FALSE"                                                 {yylval.symbol =  hashInsert(LIT_FALSE, "FALSE");  return LIT_FALSE;}              
+"TRUE"                                                  {yylval.symbol =  hashInsert(SYMBOL_LITBOOL, "TRUE", DATATYPE_BOOL);  return LIT_TRUE;}              
+"FALSE"                                                 {yylval.symbol =  hashInsert(SYMBOL_LITBOOL, "FALSE", DATATYPE_BOOL);  return LIT_FALSE;}              
 
 [v\,\;\:\(\)\[\]\{\}\+\-\*\/\<\>\=\.\~\&\$\#]           return yytext[0];        
 
@@ -53,16 +53,16 @@ ALPHA_NUM [A-Za-z_0-9]
 <COMMENT>"\n"                                           ++lineNumber;                  
 <COMMENT>.                      
 
-{ALPHA}{ALPHA_NUM}*             {yylval.symbol =  hashInsert(SYMBOL_IDENTIFIER, yytext);  return TK_IDENTIFIER;} 
-{DIGIT}+                        {yylval.symbol = hashInsert(SYMBOL_LITINT, yytext);   
+{ALPHA}{ALPHA_NUM}*             {yylval.symbol =  hashInsert(SYMBOL_IDENTIFIER, yytext, DATATYPE_IDENTIFIER);  return TK_IDENTIFIER;} 
+{DIGIT}+                        {yylval.symbol = hashInsert(SYMBOL_LITINT, yytext, DATATYPE_INT);   
                                  return LIT_INTEGER;                                           }
-{DIGIT}*"."{DIGIT}+             {yylval.symbol = hashInsert(SYMBOL_LITREAL, yytext);      
+{DIGIT}*"."{DIGIT}+             {yylval.symbol = hashInsert(SYMBOL_LITREAL, yytext, DATATYPE_FLOAT);      
                                 return LIT_FLOAT;                                              }
-{DIGIT}+"."{DIGIT}*             {yylval.symbol = hashInsert(SYMBOL_LITREAL, yytext);      
+{DIGIT}+"."{DIGIT}*             {yylval.symbol = hashInsert(SYMBOL_LITREAL, yytext, DATATYPE_FLOAT);      
                                 return LIT_FLOAT;                                              }
 
-\'([^'\\\n]?|\\.)\'             {yylval.symbol = hashInsert(SYMBOL_LITCHAR, yytext);       return LIT_CHAR;          }
-\"([^\"\\\n]|\\.)*\"            {yylval.symbol = hashInsert(SYMBOL_LITSTRING, yytext);     return LIT_STRING;        }
+\'([^'\\\n]?|\\.)\'             {yylval.symbol = hashInsert(SYMBOL_LITCHAR, yytext, DATATYPE_CHAR);       return LIT_CHAR;          }
+\"([^\"\\\n]|\\.)*\"            {yylval.symbol = hashInsert(SYMBOL_LITSTRING, yytext, DATATYPE_STRING);     return LIT_STRING;        }
 
 %%
 

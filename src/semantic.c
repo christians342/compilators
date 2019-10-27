@@ -6,6 +6,7 @@ int getSemanticErrors(){
     return semanticErrors;
 }
 
+
 int isBool(AST* node) {
     if(node->symbol->datatype == DATATYPE_BOOL)
         return 1;
@@ -23,6 +24,25 @@ int areNumericEquivalents(AST* node1, AST* node2) {
     if(isNumeric(node1) && isNumeric(node2))
         return 1;
     return 0;
+}
+
+int checkArithmeticDatatype(AST* node1, AST* node2){
+    int datatype = DATATYPE_BYTE;
+
+    if(node1->datatype == DATATYPE_BOOL || node2->datatype == DATATYPE_BOOL ||
+        node1->datatype == DATATYPE_ERROR || node2->datatype == DATATYPE_ERROR)
+        return DATATYPE_ERROR;
+
+    if(node1->datatype == DATATYPE_INT || node2->datatype == DATATYPE_INT)
+        datatype = DATATYPE_INT;
+
+    if(node1->datatype == DATATYPE_LONG || node2->datatype == DATATYPE_LONG)
+        datatype = DATATYPE_LONG;
+
+    if(node1->datatype == DATATYPE_FLOAT || node2->datatype == DATATYPE_FLOAT)
+        datatype = DATATYPE_FLOAT;
+
+    return datatype;
 }
 
 int isVectorType(AST* node){
@@ -76,6 +96,7 @@ void checkAndSetTypes(AST *node){
             
             setSymbolTypes(node);
             setDataTypes(node);
+            node->datatype = node->symbol->datatype;
         }
     }
 
@@ -100,6 +121,7 @@ void checkOperands(AST *node) {
         case AST_MUL:
         case AST_DIV:
             // CHECK CORRECTNESS OF TWO OPERANDS
+            node->datatype = checkArithmeticDatatype(node->son[0], node->son[1]);
             for(int operand = 0; operand < 2; operand++){
                 if(node->son[operand]->type == AST_ADD || 
                     node->son[operand]->type == AST_SUB || 
@@ -118,6 +140,7 @@ void checkOperands(AST *node) {
                 } else {
                     fprintf(stderr, "Semantic ERROR: Operands not compatible.\n");
                     semanticErrors++;
+                    node->datatype = DATATYPE_ERROR;
                 }
             }
             break;
@@ -126,44 +149,45 @@ void checkOperands(AST *node) {
         case AST_GREATER:
         case AST_LE:
         case AST_GE:
-            node->symbol->datatype = DATATYPE_BOOL;
+            node->datatype = DATATYPE_BOOL;
             if(!isNumeric(node->son[0]) || !isNumeric(node->son[1])) {
                 fprintf(stderr,"Semantic ERROR in line %d. Logic operation. Operands must be int, byte, float or long. \n", node->line + 1);
                 semanticErrors++;
-                node->symbol->datatype = DATATYPE_ERROR;
-            }            
+                node->datatype = DATATYPE_ERROR;
+            }
+            node->datatype = DATATYPE_BOOL;            
             break;  
 
         case AST_EQUAL:
         case AST_DIF:
-           node->symbol->datatype = DATATYPE_BOOL;
+           node->datatype = DATATYPE_BOOL;
            if ((isBool(node->son[0]) && !isBool(node->son[1])) || (isBool(node->son[1]) && !isBool(node->son[0])) ||
                (!areNumericEquivalents(node->son[0], node->son[1]))){
 
                fprintf(stderr, "Semantic ERROR in line %d. Logic operation. Operands are not compatible. \n", node->line + 1);
                semanticErrors++;
-               node->symbol->datatype = DATATYPE_ERROR;
+               node->datatype = DATATYPE_ERROR;
             }
 
             break;
 
         case AST_NOT:
-            node->symbol->datatype = DATATYPE_BOOL;
+            node->datatype = DATATYPE_BOOL;
             if(!isBool(node->son[0])){
                 fprintf(stderr,"Semantic ERROR in line %d. Logic operation. Operand must be bool.\n", node->line + 1);
                 semanticErrors++;
-                node->symbol->datatype = DATATYPE_ERROR;
+                node->datatype = DATATYPE_ERROR;
             }
 
             break;
 
         case AST_AND:
         case AST_OR:
-            node->symbol->datatype = DATATYPE_BOOL;
+            node->datatype = DATATYPE_BOOL;
             if(!isBool(node->son[0]) || !isBool(node->son[1])){   
                 fprintf(stderr,"Semantic ERROR in line %d. Logic operation. Operands must be bool.\n", node->line + 1);
                 semanticErrors++;
-                node->type = DATATYPE_ERROR;
+                node->datatype = DATATYPE_ERROR;
             }
         
             break;
@@ -171,11 +195,11 @@ void checkOperands(AST *node) {
         case AST_WHILE:
         case AST_IF:
         case AST_IFELSE:
-            node->symbol->datatype = DATATYPE_BOOL;
+            node->datatype = DATATYPE_BOOL;
             if(!isBool(node->son[0])){
                 fprintf(stderr,"Semantic ERROR in line %d. Conditional operation. Operand must be bool.\n", node->line + 1);
                 semanticErrors++;
-                node->type = DATATYPE_ERROR;
+                node->datatype = DATATYPE_ERROR;
 
             }
             break;
@@ -184,8 +208,7 @@ void checkOperands(AST *node) {
             if(node->son[0]->symbol->type != SYMBOL_LITSTRING){
                 fprintf(stderr,"Semantic ERROR in line %d. Print command expected string.\n", node->line + 1);
                 semanticErrors++;
-                node->type = DATATYPE_ERROR;
-
+                node->datatype = DATATYPE_ERROR;
             }
             break;
 
@@ -195,6 +218,7 @@ void checkOperands(AST *node) {
                 semanticErrors++;
                 node->type = DATATYPE_ERROR;
             }
+            break;
 
     }
 

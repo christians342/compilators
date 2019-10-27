@@ -29,7 +29,7 @@ HASH_NODE *hashFind(char *text){
     return 0; 
 }
 
-HASH_NODE *hashInsert(int type, char *text){
+HASH_NODE *hashInsert(int type, char *text, int datatype){
     HASH_NODE *newNode;
     int address = hashAddress(text);
 
@@ -39,6 +39,7 @@ HASH_NODE *hashInsert(int type, char *text){
     newNode = (HASH_NODE *) calloc(1, sizeof(HASH_NODE));
     newNode->type = type;
     newNode->text = (char *) calloc(strlen(text) + 1, sizeof(char));
+    newNode->datatype = datatype;
 
     strcpy(newNode->text, text);
     newNode->next = Table[address];
