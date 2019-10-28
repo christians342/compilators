@@ -6,7 +6,6 @@ int getSemanticErrors(){
     return semanticErrors;
 }
 
-
 int isBool(AST* node) {
     if(node->symbol->datatype == DATATYPE_BOOL)
         return 1;
@@ -15,6 +14,13 @@ int isBool(AST* node) {
 
 int isNumeric(AST* node) {
     if(node->type == AST_INT || node->type == AST_FLOAT || node->type == AST_BYTE) 
+        return 1;
+    return 0;
+}
+
+int isNumericDatatype(int datatype) {
+     if(datatype == DATATYPE_INT || datatype == DATATYPE_FLOAT 
+        || datatype == DATATYPE_BYTE || datatype == DATATYPE_CHAR) 
         return 1;
     return 0;
 }
@@ -43,6 +49,25 @@ int checkArithmeticDatatype(AST* node1, AST* node2){
         datatype = DATATYPE_FLOAT;
 
     return datatype;
+}
+
+int areEquivalents(int datatype1, int datatype2) {
+    if((datatype1 == DATATYPE_INT || datatype1 == DATATYPE_FLOAT || datatype1 == DATATYPE_BYTE || datatype1 == DATATYPE_CHAR) 
+     && (datatype2 == DATATYPE_INT || datatype2 == DATATYPE_FLOAT || datatype2 == DATATYPE_BYTE || datatype2 == DATATYPE_CHAR)) 
+        return 1; 
+    return 0;
+}
+
+int checkVet(AST* node, int datatype)
+{   
+    if(node){
+
+        if((node->son[0]->symbol->datatype != datatype) && !areEquivalents(node->son[0]->symbol->datatype, datatype)) 
+            return 0;
+        if(node->son[1])
+            return checkVet(node->son[1], datatype);
+    }
+    return 1;
 }
 
 int isVectorType(AST* node){
@@ -220,6 +245,25 @@ void checkOperands(AST *node) {
             }
             break;
 
+        case AST_VEC:
+            if(!checkVet(node->son[2], node->symbol->datatype)){
+                fprintf(stderr,"Semantic ERROR in line %d. Invalid types in vector declaration\n", node->line + 1);
+                semanticErrors++;
+            }
+            break;
+
+        case AST_VECEXP:
+        case AST_VECREAD:        
+            if(!isNumericDatatype(node->son[0]->symbol->datatype)){
+                fprintf(stderr,"Semantic ERROR in line %d. Invalid type in vector index\n", node->line + 1);
+                semanticErrors++;
+            }
+            break;
+
+        case AST_SYMBOL:
+            node->datatype = node->symbol->datatype;
+            break;
+
     }
 
     for(int i = 0; i < MAX_SONS; i++){
@@ -231,6 +275,6 @@ void checkSemantics(AST *node) {
     fprintf(stderr, "---Checking semantics---\n");
     checkAndSetTypes(node);
     checkUndeclared();    
+    //checkCorrectUse(node);
     checkOperands(node);
-    //checkDataTypes(node);
 }
