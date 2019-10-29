@@ -5,6 +5,13 @@ bool b = TRUE;
 int v0[10]: 1;
 int v2[10]: 1 0 0 0 0 0 0 0 0; 
 
+int teste() {
+  print "Digite um numero: \n";
+  
+  return b; 
+}
+
+
 int main(int a){
 
   a = 1;
@@ -13,6 +20,8 @@ int main(int a){
   v1[b] = (2+2);
   read v1;
 
+  return a;
 }
+
 
 int main(){}

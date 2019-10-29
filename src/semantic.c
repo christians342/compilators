@@ -51,18 +51,18 @@ int checkArithmeticDatatype(AST* node1, AST* node2){
     return datatype;
 }
 
-int areEquivalents(int datatype1, int datatype2) {
-    if((datatype1 == DATATYPE_INT || datatype1 == DATATYPE_FLOAT || datatype1 == DATATYPE_BYTE || datatype1 == DATATYPE_CHAR) 
-     && (datatype2 == DATATYPE_INT || datatype2 == DATATYPE_FLOAT || datatype2 == DATATYPE_BYTE || datatype2 == DATATYPE_CHAR)) 
+int areDatatypeEquivalents(int datatype1, int datatype2) {
+    if(isNumericDatatype(datatype1) && isNumericDatatype(datatype2)) 
         return 1; 
     return 0;
 }
+
 
 int checkVet(AST* node, int datatype)
 {   
     if(node){
 
-        if((node->son[0]->symbol->datatype != datatype) && !areEquivalents(node->son[0]->symbol->datatype, datatype)) 
+        if((node->son[0]->symbol->datatype != datatype) && !areDatatypeEquivalents(node->son[0]->symbol->datatype, datatype)) 
             return 0;
         if(node->son[1])
             return checkVet(node->son[1], datatype);
@@ -76,6 +76,32 @@ int isVectorType(AST* node){
         return 1;
 
     return 0;
+}
+
+void isReturnCompatible(AST* node, int datatype){
+    if(!node) return;
+    if(node->type == AST_RET){
+        printf("---%d----%d---\n", node->son[0]->datatype, datatype);
+        if(node->son[0]->datatype != datatype
+            && (!isNumericDatatype(node->son[0]->datatype) || !isNumericDatatype(datatype))){
+            printf("Semantic ERROR in line %d: Return statement with wrong datatype.\n", node->line + 1);
+            semanticErrors++;
+        }
+    }
+    for(int i = 0; i < MAX_SONS; i++){
+        isReturnCompatible(node->son[i], datatype);
+    }
+}
+
+void checkReturns(AST* node){
+    if(node != NULL && node->type == AST_FUNC){
+        isReturnCompatible(node, node->symbol->datatype);
+    }
+
+    for(int i = 0; i < MAX_SONS; i++){
+        if(node->son[i] != NULL)
+            checkReturns(node->son[i]);
+    }
 }
 
 void setSymbolTypes(AST *node){
@@ -275,6 +301,6 @@ void checkSemantics(AST *node) {
     fprintf(stderr, "---Checking semantics---\n");
     checkAndSetTypes(node);
     checkUndeclared();    
-    //checkCorrectUse(node);
     checkOperands(node);
+    checkReturns(node);
 }
