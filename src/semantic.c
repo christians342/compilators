@@ -7,7 +7,7 @@ int getSemanticErrors(){
 }
 
 int isBool(AST* node) {
-    if(node->symbol->datatype == DATATYPE_BOOL)
+    if(node->datatype == DATATYPE_BOOL)
         return 1;
     return 0;
 }
@@ -81,7 +81,6 @@ int isVectorType(AST* node){
 void isReturnCompatible(AST* node, int datatype){
     if(!node) return;
     if(node->type == AST_RET){
-        printf("---%d----%d---\n", node->son[0]->datatype, datatype);
         if(node->son[0]->datatype != datatype
             && (!isNumericDatatype(node->son[0]->datatype) || !isNumericDatatype(datatype))){
             printf("Semantic ERROR in line %d: Return statement with wrong datatype.\n", node->line + 1);
@@ -247,6 +246,7 @@ void checkOperands(AST *node) {
         case AST_IF:
         case AST_IFELSE:
             node->datatype = DATATYPE_BOOL;
+
             if(!isBool(node->son[0])){
                 fprintf(stderr,"Semantic ERROR in line %d. Conditional operation. Operand must be bool.\n", node->line + 1);
                 semanticErrors++;
@@ -288,6 +288,17 @@ void checkOperands(AST *node) {
 
         case AST_SYMBOL:
             node->datatype = node->symbol->datatype;
+            break;
+
+        case AST_FOR:
+            node->datatype = DATATYPE_INT;
+            if(!isNumericDatatype(node->son[0]->symbol->datatype) 
+                || !isNumericDatatype(node->son[1]->symbol->datatype) 
+                || !isNumericDatatype(node->son[2]->symbol->datatype)){
+
+                fprintf(stderr,"Semantic ERROR in line %d. Invalid operand in for command \n", node->line + 1);
+                semanticErrors++;
+            }
             break;
 
     }
