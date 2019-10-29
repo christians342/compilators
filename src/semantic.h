@@ -1,3 +1,4 @@
+#include <string.h>
 #include "astree.h"
 #include "hash.h"
 

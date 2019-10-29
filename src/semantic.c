@@ -1,6 +1,7 @@
 #include "semantic.h"
 
 
+AST *root;
 int semanticErrors = 0;
 int getSemanticErrors(){
     return semanticErrors;
@@ -136,11 +137,55 @@ void checkUndeclared() {
     semanticErrors += hashCheckUndeclared();
 }
 
+AST *getFunctionDeclaration(char *funcName, AST *node){
+    if(node->symbol != NULL && node->type == AST_FUNC && strcmp(node->symbol->text, funcName) == 0)
+		return node;
+
+	for(int i = 0; i < MAX_SONS; i++){
+		if(node->son[i] == NULL)
+			return NULL;
+		AST * funDec = getFunctionDeclaration(funcName, node->son[i]);
+		if(funDec != NULL)
+			return funDec;
+	}
+	return NULL;
+}
+
+int getNumberOfArguments(AST *node){
+    if(node == NULL) return 0;
+	if(node->son[0] != NULL)
+		return 1 + getNumberOfArguments(node->son[1]);
+	else
+		return 0;
+}
+
+int numberOfArgumentsMatch(AST *decl, AST *called){
+    int numberOfArgsDecl = getNumberOfArguments(decl->son[2]);
+	int numberOfArgsCalled = getNumberOfArguments(called->son[0]);	
+	if(numberOfArgsDecl != numberOfArgsCalled){
+    	fprintf(stderr, "Semantic ERROR in line %d: Incompatible number of arguments in function call.\n", called->line);
+		semanticErrors++;
+		return 0;
+	}
+	return 1;
+}
+
+void validateFunc(AST *node) {
+    AST* declaration = getFunctionDeclaration(node->symbol->text, root);
+    if(declaration == NULL){
+        return;
+    }
+    numberOfArgumentsMatch(declaration, node);
+}
+
 
 void checkOperands(AST *node) {
     if(!node) return;
 
     switch(node->type){
+        case AST_FUNC:
+            validateFunc(node);
+            break;
         case AST_ADD:
         case AST_SUB:
         case AST_MUL:
@@ -271,10 +316,10 @@ void checkOperands(AST *node) {
     }
 }
 
-void checkSemantics(AST *node) {
+void checkSemantics(AST *root) {
     fprintf(stderr, "---Checking semantics---\n");
-    checkAndSetTypes(node);
+    checkAndSetTypes(root);
     checkUndeclared();    
-    //checkCorrectUse(node);
-    checkOperands(node);
+    //checkCorrectUse(root);
+    checkOperands(root);
 }
