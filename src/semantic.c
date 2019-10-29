@@ -130,7 +130,6 @@ void setDataTypes(AST *node){
 
     if(node->son[0]->type == AST_BOOL)
         node->symbol->datatype = DATATYPE_BOOL;
-
 }
 
 void checkAndSetTypes(AST *node){
@@ -256,7 +255,7 @@ void checkOperands(AST *node) {
             break;
 
         case AST_PRINT:
-            if(node->son[0]->symbol->type != SYMBOL_LITSTRING){
+            if((!node->son[0]->symbol)){
                 fprintf(stderr,"Semantic ERROR in line %d. Print command expected string.\n", node->line + 1);
                 semanticErrors++;
                 node->datatype = DATATYPE_ERROR;
@@ -300,6 +299,13 @@ void checkOperands(AST *node) {
                 semanticErrors++;
             }
             break;
+        //case AST_LPARAM:
+        //case AST_EPARAM:
+        //    node->datatype = DATATYPE_STRING;
+
+       // case AST_ASS:
+
+
 
     }
 
