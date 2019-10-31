@@ -22,8 +22,8 @@ int main ()
 
   while (i<10)
     {
-    i = incn(i);
-    a = incn(a,1,2);
+    i = incn(i,1,2,4);
+    a = incn(a,b,c);
     };
 
   print "Incrementado algumas vezes a fica " a "\n";

@@ -84,7 +84,7 @@ void isReturnCompatible(AST* node, int datatype){
     if(node->type == AST_RET){
         if(node->son[0]->datatype != datatype
             && (!isNumericDatatype(node->son[0]->datatype) || !isNumericDatatype(datatype))){
-            printf("Semantic ERROR in line %d: Return statement with wrong datatype.\n", node->line + 1);
+            printf("Semantic ERROR in line %d. Return statement with wrong datatype.\n", node->line + 1);
             semanticErrors++;
         }
     }
@@ -178,9 +178,11 @@ AST *getFunctionDeclaration(char *funcName, AST *node){
 int getNumberOfArgumentsCalled(AST *node){
     if(node == NULL) return 0;
 	if(node->son[0] != NULL){
-        if(node->type = AST_EPARAM)
+        if(node->type == AST_EPARAM)
             return 1 + getNumberOfArgumentsCalled(node->son[1]);
-        return getNumberOfArgumentsCalled(node->son[0]);
+        else
+            return getNumberOfArgumentsCalled(node->son[0]);
+        
     }
 	else
 		return 0;
@@ -201,9 +203,8 @@ int getNumberOfArgumentsDecl(AST *node){
 int numberOfArgumentsMatch(AST *decl, AST *called){
     int numberOfArgsDecl = getNumberOfArgumentsDecl(decl->son[1]);
 	int numberOfArgsCalled = getNumberOfArgumentsCalled(called->son[0]);
-
 	if(numberOfArgsDecl != numberOfArgsCalled){
-    	fprintf(stderr, "Semantic ERROR in line %d. Incompatible number of arguments in function call. Expected %i arguments in %s function.\n", called->line, numberOfArgsDecl, decl->symbol->text);
+    	fprintf(stderr, "Semantic ERROR in line %d. Incompatible number of arguments in function call. Expected %i arguments but %d called.\n", called->line + 1, numberOfArgsDecl, numberOfArgsCalled);
 		semanticErrors++;
 		return 0;
 	}
