@@ -14,8 +14,8 @@ print v1 [ 55] ;
 print  "Digite um numero: \n" ;
 read  a ;
 while( i <  10){
- i = incn ( i,  1 );
- a = incn ( a,  1 );
+ i = incn ( i );
+ a = incn ( a 1,  2 );
 };
 print  "Incrementado algumas vezes a fica "  a "\n" ;
 if( a ==  15) then 

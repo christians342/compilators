@@ -175,19 +175,35 @@ AST *getFunctionDeclaration(char *funcName, AST *node){
 	return NULL;
 }
 
-int getNumberOfArguments(AST *node){
+int getNumberOfArgumentsCalled(AST *node){
     if(node == NULL) return 0;
-	if(node->son[0] != NULL)
-		return 1 + getNumberOfArguments(node->son[1]);
+	if(node->son[0] != NULL){
+        if(node->type = AST_EPARAM)
+            return 1 + getNumberOfArgumentsCalled(node->son[1]);
+        return getNumberOfArgumentsCalled(node->son[0]);
+    }
+	else
+		return 0;
+}
+
+int getNumberOfArgumentsDecl(AST *node){
+    if(node == NULL) return 0;
+	if(node->son[0] != NULL){
+        if(node->type == AST_LPARAM){
+            return 1 + getNumberOfArgumentsDecl(node->son[2]);    
+        } else
+		    return getNumberOfArgumentsDecl(node->son[0]);
+    }
 	else
 		return 0;
 }
 
 int numberOfArgumentsMatch(AST *decl, AST *called){
-    int numberOfArgsDecl = getNumberOfArguments(decl->son[2]);
-	int numberOfArgsCalled = getNumberOfArguments(called->son[0]);	
+    int numberOfArgsDecl = getNumberOfArgumentsDecl(decl->son[1]);
+	int numberOfArgsCalled = getNumberOfArgumentsCalled(called->son[0]);
+
 	if(numberOfArgsDecl != numberOfArgsCalled){
-    	fprintf(stderr, "Semantic ERROR in line %d: Incompatible number of arguments in function call.\n", called->line);
+    	fprintf(stderr, "Semantic ERROR in line %d. Incompatible number of arguments in function call. Expected %i arguments in %s function.\n", called->line, numberOfArgsDecl, decl->symbol->text);
 		semanticErrors++;
 		return 0;
 	}
@@ -207,7 +223,7 @@ void checkOperands(AST *node) {
     if(!node) return;
 
     switch(node->type){
-        case AST_FUNC:
+        case AST_IDEXP:
             validateFunc(node);
             break;
         case AST_ADD:
@@ -232,7 +248,7 @@ void checkOperands(AST *node) {
                     )){
 
                 } else {
-                    fprintf(stderr, "Semantic ERROR: Operands not compatible.\n");
+                    fprintf(stderr, "Semantic ERROR in line %d. Operands not compatible.\n", node->line);
                     semanticErrors++;
                     node->datatype = DATATYPE_ERROR;
                 }
