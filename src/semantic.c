@@ -383,4 +383,6 @@ void checkSemantics(AST *root) {
     //checkCorrectUse(root);
     checkOperands(root);
     checkReturns(root);
+    if(semanticErrors > 0)
+        exit(4);
 }
