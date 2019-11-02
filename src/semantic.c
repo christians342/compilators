@@ -192,7 +192,7 @@ int getNumberOfArgumentsDecl(AST *node){
     if(node == NULL) return 0;
 	if(node->son[0] != NULL){
         if(node->type == AST_LPARAM){
-            return 1 + getNumberOfArgumentsDecl(node->son[2]);    
+            return 1 + getNumberOfArgumentsDecl(node->son[1]);    
         } else
 		    return getNumberOfArgumentsDecl(node->son[0]);
     }
