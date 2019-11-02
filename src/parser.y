@@ -132,7 +132,7 @@ listLit:
 
 
 parameterList:    
-           type TK_IDENTIFIER rest         {$$=astreeCreate(AST_LPARAM,0,astreeCreate(AST_SYMBOL, $2, 0, 0, 0, 0, getLineNumber()),$1,$3,0, getLineNumber());}
+           type TK_IDENTIFIER rest         {$$=astreeCreate(AST_LPARAM,0,astreeCreate(AST_PARAM, $2, $1, 0, 0, 0, getLineNumber()),$3,0,0, getLineNumber());}
         |                                  {$$=0;}
         ;
 

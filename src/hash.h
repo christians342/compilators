@@ -16,6 +16,7 @@
 #define SYMBOL_SCALAR       1001
 #define SYMBOL_VECTOR       1002
 #define SYMBOL_FUNC         1003
+#define SYMBOL_PARAM         1004
 
 #define DATATYPE_INT        2001
 #define DATATYPE_FLOAT      2002

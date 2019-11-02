@@ -111,6 +111,9 @@ void setSymbolTypes(AST *node){
     if(node->type == AST_FUNC)
         node->symbol->type = SYMBOL_FUNC; 
 
+    if(node->type == AST_PARAM)
+        node->symbol->type = SYMBOL_PARAM;
+
     if(isVectorType(node))
         node->symbol->type = SYMBOL_VECTOR;
 }
@@ -136,21 +139,18 @@ void setDataTypes(AST *node){
 void checkAndSetTypes(AST *node){
     if(!node) return;
 
-    if(node->type == AST_VARDEC || node->type == AST_FUNC || node->type == AST_VEC){
-
+    if(node->type == AST_VARDEC || node->type == AST_FUNC || node->type == AST_VEC || node->type == AST_PARAM){
         if(node->symbol){
             if(node->symbol->type != SYMBOL_IDENTIFIER){
                 fprintf(stderr, "Semantic ERROR: Symbol %s already declared at line %d.\n", node->symbol->text, node->line + 1);
                 semanticErrors++;
             }
-            
+
             setSymbolTypes(node);
             setDataTypes(node);
             node->datatype = node->symbol->datatype;
         }
     }
-
-    //TODO lista de parâmetros funções
 
     for(int i = 0; i < MAX_SONS; i++) {
         checkAndSetTypes(node->son[i]);

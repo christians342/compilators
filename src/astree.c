@@ -236,7 +236,7 @@ void decompilation(AST *node, FILE *file) {
             decompilation(node->son[0], file);
             fprintf(file, ") then \n");
             decompilation(node->son[1], file);
-            fprintf(file, "else\n");
+            fprintf(file, " else\n");
             decompilation(node->son[2], file);
             break;
 
@@ -294,9 +294,14 @@ void decompilation(AST *node, FILE *file) {
 			break;
 
 		case AST_LPARAM:
-            decompilation(node->son[1], file);
             decompilation(node->son[0], file);
+            decompilation(node->son[1], file);
             decompilation(node->son[2], file);
+            break;
+        
+        case AST_PARAM:
+            decompilation(node->son[0], file);
+            fprintf(file, " %s", node->symbol->text);
             break;
 
 		case AST_RPARAM:
