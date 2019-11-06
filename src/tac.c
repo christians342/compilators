@@ -1,5 +1,7 @@
 #import "tac.h"
 
+TAC* makeBinOperation(int type, TAC* code0, TAC* code1);
+
 TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     TAC* newTac;
     newTac = (TAC*) calloc(1, sizeof(TAC));
@@ -35,18 +37,22 @@ TAC* generateCode(AST *ast){
                                      0));
             break;
         case AST_ADD:
-            return tacJoin(
-                        tacJoin(code[0], 
-                                code[1]), 
-                        tacCreate(TAC_ADD, 
-                                  makeTemp(), 
-                                  code[0]? code[0]->res : 0,
-                                  code[1]? code[1]->res : 0));
+            return makeBinOperation(TAC_ADD, code[0], code[1]);
             break;
         default:
             return tacJoin(tacJoin(tacJoin(code[0], code[1]), code[2]), code[3]);
             break;
     }
+}
+
+TAC* makeBinOperation(int type, TAC* code0, TAC* code1){
+    return tacJoin(
+                    tacJoin(code0, 
+                            code1), 
+                    tacCreate(type, 
+                              makeTemp(), 
+                              code0? code0->res : 0,
+                              code1? code1->res : 0));
 }
 
 TAC* tacJoin(TAC* l1, TAC* l2){
