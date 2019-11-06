@@ -6,5 +6,5 @@ int i = 101;
 int main (int xy, int xz, int xw)
 {
 
-  a = 1 + 2 + i;
+  a = 1 + 2 / i;
 }

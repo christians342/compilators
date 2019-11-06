@@ -39,6 +39,15 @@ TAC* generateCode(AST *ast){
         case AST_ADD:
             return makeBinOperation(TAC_ADD, code[0], code[1]);
             break;
+        case AST_SUB:
+            return makeBinOperation(TAC_SUB, code[0], code[1]);
+            break;
+        case AST_MUL:
+            return makeBinOperation(TAC_MUL, code[0], code[1]);
+            break;
+        case AST_DIV:
+            return makeBinOperation(TAC_DIV, code[0], code[1]);
+            break;
         default:
             return tacJoin(tacJoin(tacJoin(code[0], code[1]), code[2]), code[3]);
             break;
