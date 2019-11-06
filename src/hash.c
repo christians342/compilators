@@ -48,6 +48,14 @@ HASH_NODE *hashInsert(int type, char *text, int datatype){
     return newNode;
 }
 
+HASH_NODE* makeTemp(void){
+    static int serialNumber = 0;
+    static char name[100];
+
+    sprintf(name, "aTempNameThatWillNotBeUsedInRealProgram_%d", serialNumber++);
+    return hashInsert(0, name, 0);
+}
+
 void hashPrint(void){
     int i;
     HASH_NODE *node;

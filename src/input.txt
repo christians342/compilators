@@ -1,17 +1,10 @@
 // UFRGS - Compiladores - Marcelo Johann - 2019/2
 
-int a = 0;
-int i = 0;
-
-int incn ( int x, int n)
-  {
-    x = 0;
-    n = 0;
-    
-  }
+int a = 100;
+int i = 101;
 
 int main (int xy, int xz, int xw)
 {
 
-  a = incn(0, 2);
+  a = 1 + 2 + i;
 }

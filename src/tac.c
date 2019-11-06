@@ -27,6 +27,22 @@ TAC* generateCode(AST *ast){
         case AST_SYMBOL:
             return tacCreate(TAC_SYMBOL, ast->symbol, 0, 0);
             break;
+        case AST_ASS:
+            return tacJoin(code[0],
+                           tacCreate(TAC_MOVE,
+                                     ast->symbol,
+                                     code[0]? code[0]->res : 0,
+                                     0));
+            break;
+        case AST_ADD:
+            return tacJoin(
+                        tacJoin(code[0], 
+                                code[1]), 
+                        tacCreate(TAC_ADD, 
+                                  makeTemp(), 
+                                  code[0]? code[0]->res : 0,
+                                  code[1]? code[1]->res : 0));
+            break;
         default:
             return tacJoin(tacJoin(tacJoin(code[0], code[1]), code[2]), code[3]);
             break;
@@ -60,11 +76,11 @@ void tacPrintSingle(TAC *tac){
     }
 
     if(tac->res) fprintf(stderr, ", %s", tac->res->text);
-        else fprintf(stderr, "0");
+        else fprintf(stderr, ", 0");
     if(tac->op1) fprintf(stderr, ", %s", tac->op1->text);
-        else fprintf(stderr, "0");
+        else fprintf(stderr, ", 0");
     if(tac->op2) fprintf(stderr, ", %s", tac->op2->text);
-        else fprintf(stderr, "0");
+        else fprintf(stderr, ", 0");
 
     fprintf(stderr, ");\n");
 }

@@ -16,7 +16,7 @@
 #define SYMBOL_SCALAR       1001
 #define SYMBOL_VECTOR       1002
 #define SYMBOL_FUNC         1003
-#define SYMBOL_PARAM         1004
+#define SYMBOL_PARAM        1004
 
 #define DATATYPE_INT        2001
 #define DATATYPE_FLOAT      2002
@@ -42,6 +42,7 @@ void hashInit(void);
 int hashAddress(char *text);
 HASH_NODE* hashFind(char *text);
 HASH_NODE* hashInsert(int type, char *text, int datatype);
+HASH_NODE* makeTemp(void);
 void hashPrint(void);
 int hashCheckUndeclared(void);
 
