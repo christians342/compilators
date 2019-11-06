@@ -6,6 +6,7 @@
     #include "hash.h"
     #include "astree.h"
     #include "semantic.h"
+    #include "tac.h"
 
     int getLineNumber();
     int yyerror(char *message);
@@ -83,7 +84,8 @@ program:
           ldecl                                                 {root = $1; 
                                                                 astreePrint($1, 0);
                                                                 checkSemantics($1);
-                                                                fprintf(stderr, "%d semantic errors.\n", getSemanticErrors());}    
+                                                                fprintf(stderr, "%d semantic errors.\n", getSemanticErrors());
+                                                                tacPrintBackwards(generateCode($1));}    
         ;
 
 ldecl:
