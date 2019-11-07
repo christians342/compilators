@@ -1,6 +1,7 @@
 #import "tac.h"
 
 TAC* makeBinOperation(int type, TAC* code0, TAC* code1);
+TAC* makeIfThen(TAC* code0, TAC* code1);
 
 TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     TAC* newTac;
@@ -48,6 +49,9 @@ TAC* generateCode(AST *ast){
         case AST_DIV:
             return makeBinOperation(TAC_DIV, code[0], code[1]);
             break;
+        case AST_IF:
+            return makeIfThen(code[0], code[1]);
+            break;
         default:
             return tacJoin(tacJoin(tacJoin(code[0], code[1]), code[2]), code[3]);
             break;
@@ -62,6 +66,14 @@ TAC* makeBinOperation(int type, TAC* code0, TAC* code1){
                               makeTemp(), 
                               code0? code0->res : 0,
                               code1? code1->res : 0));
+}
+
+TAC* makeIfThen(TAC* code0, TAC* code1){
+    HASH_NODE* label = makeLabel();
+    TAC* tacIf = tacCreate(TAC_IFZ, label, code0? code0->res : 0, 0);
+    TAC* tacLabel = tacCreate(TAC_LABEL, label, 0, 0);
+
+    return tacJoin(tacJoin(tacJoin(code0, tacIf), code1), tacLabel);
 }
 
 TAC* tacJoin(TAC* l1, TAC* l2){
@@ -81,12 +93,14 @@ void tacPrintSingle(TAC *tac){
 
     fprintf(stderr, "TAC(");
     switch(tac->type){
-        case TAC_SYMBOL: fprintf(stderr, "TAC_SYMBOL"); break;
-        case TAC_ADD: fprintf(stderr, "TAC_ADD"); break;
-        case TAC_SUB: fprintf(stderr, "TAC_SUB"); break;
-        case TAC_MUL: fprintf(stderr, "TAC_MUL"); break;
-        case TAC_DIV: fprintf(stderr, "TAC_DIV"); break;
-        case TAC_MOVE: fprintf(stderr, "TAC_MOVE"); break;
+        case TAC_SYMBOL:    fprintf(stderr, "TAC_SYMBOL"); break;
+        case TAC_ADD:       fprintf(stderr, "TAC_ADD"); break;
+        case TAC_SUB:       fprintf(stderr, "TAC_SUB"); break;
+        case TAC_MUL:       fprintf(stderr, "TAC_MUL"); break;
+        case TAC_DIV:       fprintf(stderr, "TAC_DIV"); break;
+        case TAC_MOVE:      fprintf(stderr, "TAC_MOVE"); break;
+        case TAC_IFZ:       fprintf(stderr, "TAC_IFZ"); break;
+        case TAC_LABEL:     fprintf(stderr, "TAC_LABEL"); break;
         default: fprintf(stderr, "UNKNOWN"); break;
     }
 

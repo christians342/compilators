@@ -1,5 +1,7 @@
  int  a =  100;
  int  i =  101;
  int main ( int  xy,  int  xz,  int  xw){
+if( a ==  15) then 
  a =  1 +  2 /  i;
+ b =  56;
 }

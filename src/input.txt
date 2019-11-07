@@ -5,6 +5,8 @@ int i = 101;
 
 int main (int xy, int xz, int xw)
 {
-
-  a = 1 + 2 / i;
+  if (a==15) then 
+    a = 1 + 2 / i;
+  b = 56;
+  
 }

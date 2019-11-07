@@ -52,7 +52,15 @@ HASH_NODE* makeTemp(void){
     static int serialNumber = 0;
     static char name[100];
 
-    sprintf(name, "aTempNameThatWillNotBeUsedInRealProgram_%d", serialNumber++);
+    sprintf(name, "__temp%d__", serialNumber++);
+    return hashInsert(0, name, 0);
+}
+
+HASH_NODE* makeLabel(void){
+    static int serialNumber = 0;
+    static char name[100];
+
+    sprintf(name, "__label%d__", serialNumber++);
     return hashInsert(0, name, 0);
 }
 
