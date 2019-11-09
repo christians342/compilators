@@ -14,6 +14,14 @@
 #define TAC_IFZ     7
 #define TAC_LABEL   8
 #define TAC_JUMP    9
+#define TAC_READ    10
+#define TAC_GREATER 11
+#define TAC_LESSER  12
+#define TAC_OR      13
+#define TAC_AND     14
+#define TAC_NOT     15
+#define TAC_LE      16
+#define TAC_GE      17
 
 
 typedef struct tac_node{

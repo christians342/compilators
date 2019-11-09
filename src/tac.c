@@ -54,13 +54,33 @@ TAC* generateCode(AST *ast, HASH_NODE* label){
         case AST_DIV:
             return makeBinOperation(TAC_DIV, code[0], code[1]);
             break;
+        case AST_GREATER:
+            return makeBinOperation(TAC_GREATER, code[0], code[1]);
+            break;
+        case AST_LESSER:
+            return makeBinOperation(TAC_LESSER, code[0], code[1]);
+            break;
+        case AST_OR:
+            return makeBinOperation(TAC_OR, code[0], code[1]);
+            break;
+        case AST_AND:
+            return makeBinOperation(TAC_AND, code[0], code[1]);
+            break;
+        case AST_LE:
+            return makeBinOperation(TAC_LE, code[0], code[1]);
+            break;
+        case AST_GE:
+            return makeBinOperation(TAC_GE, code[0], code[1]);
+            break;
         case AST_IF:
         case AST_IFELSE:
             return makeIfThen(code[0], code[1]);
             break;
         case AST_WHILE:
-            return  makeWhile(code[0], code[1], label);
+            return makeWhile(code[0], code[1], label);
             break;
+        case AST_READ:
+            return tacCreate(TAC_READ, ast->symbol,0,0);
         default:
             return tacJoin(tacJoin(tacJoin(code[0], code[1]), code[2]), code[3]);
             break;
@@ -124,6 +144,14 @@ void tacPrintSingle(TAC *tac){
         case TAC_IFZ:       fprintf(stderr, "TAC_IFZ"); break;
         case TAC_LABEL:     fprintf(stderr, "TAC_LABEL"); break;
         case TAC_JUMP:      fprintf(stderr, "TAC_JUMP"); break;
+        case TAC_READ:      fprintf(stderr, "TAC_READ"); break;
+        case TAC_GREATER:   fprintf(stderr, "TAC_GREATER"); break;
+        case TAC_LESSER:    fprintf(stderr, "TAC_LESSER"); break;
+        case TAC_OR:        fprintf(stderr, "TAC_OR"); break;
+        case TAC_AND:       fprintf(stderr, "TAC_AND"); break;
+        case TAC_NOT:       fprintf(stderr, "TAC_NOT"); break;
+        case TAC_LE:        fprintf(stderr, "TAC_LE"); break;
+        case TAC_GE:        fprintf(stderr, "TAC_GE"); break;
         default: fprintf(stderr, "UNKNOWN"); break;
     }
 

@@ -10,8 +10,9 @@ int main (int xy, int xz, int xw)
   b = 56;
 
  i = 2;
- while(i > 0){
+ while(a v xy . xz < xy){
    i = i -1;
+   read b;
  }
   
 }
