@@ -13,6 +13,7 @@
 
 #define TAC_IFZ     7
 #define TAC_LABEL   8
+#define TAC_JUMP    9
 
 
 typedef struct tac_node{
@@ -28,7 +29,7 @@ typedef struct tac_node{
 TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2);
 void tacPrintSingle(TAC *tac);
 void tacPrintBackwards(TAC *tac);
-TAC* generateCode(AST *ast);
+TAC* generateCode(AST *ast, HASH_NODE* label);
 TAC* tacJoin(TAC* tac1, TAC* tac2);
 
 #endif

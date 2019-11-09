@@ -2,6 +2,7 @@
 
 TAC* makeBinOperation(int type, TAC* code0, TAC* code1);
 TAC* makeIfThen(TAC* code0, TAC* code1);
+TAC* makeWhile(TAC* code0, TAC* code1, HASH_NODE* label);
 
 TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     TAC* newTac;
@@ -16,14 +17,18 @@ TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     return newTac;
 }
 
-TAC* generateCode(AST *ast){
+TAC* generateCode(AST *ast, HASH_NODE* label){
     if(!ast) return 0;
 
     TAC* code[MAX_SONS]; 
 
+    if(ast->type == AST_WHILE)
+        label = makeLabel();
+
     // generateCode for children first
     for(int i = 0; i < MAX_SONS; i++)
-        code[i] = generateCode(ast->son[i]);
+        code[i] = generateCode(ast->son[i], label);
+
 
     // then itself
     switch(ast->type){
@@ -50,7 +55,11 @@ TAC* generateCode(AST *ast){
             return makeBinOperation(TAC_DIV, code[0], code[1]);
             break;
         case AST_IF:
+        case AST_IFELSE:
             return makeIfThen(code[0], code[1]);
+            break;
+        case AST_WHILE:
+            return  makeWhile(code[0], code[1], label);
             break;
         default:
             return tacJoin(tacJoin(tacJoin(code[0], code[1]), code[2]), code[3]);
@@ -74,6 +83,19 @@ TAC* makeIfThen(TAC* code0, TAC* code1){
     TAC* tacLabel = tacCreate(TAC_LABEL, label, 0, 0);
 
     return tacJoin(tacJoin(tacJoin(code0, tacIf), code1), tacLabel);
+}
+
+
+TAC* makeWhile(TAC* code0, TAC* code1, HASH_NODE* whileLabel){
+    HASH_NODE* jumpLabel = makeLabel();
+
+    TAC* whileTac = tacCreate(TAC_IFZ, jumpLabel, code0? code0->res : 0, 0);
+    TAC* whileTacLabel = tacCreate(TAC_LABEL, whileLabel, 0, 0);
+
+    TAC* jumpTac = tacCreate(TAC_JUMP, whileLabel, 0, 0);
+    TAC* jumpTacLabel = tacCreate(TAC_LABEL, jumpLabel, 0, 0);
+
+    return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(whileTacLabel, code0), whileTac), code1), jumpTac), jumpTacLabel);
 }
 
 TAC* tacJoin(TAC* l1, TAC* l2){
@@ -101,6 +123,7 @@ void tacPrintSingle(TAC *tac){
         case TAC_MOVE:      fprintf(stderr, "TAC_MOVE"); break;
         case TAC_IFZ:       fprintf(stderr, "TAC_IFZ"); break;
         case TAC_LABEL:     fprintf(stderr, "TAC_LABEL"); break;
+        case TAC_JUMP:      fprintf(stderr, "TAC_JUMP"); break;
         default: fprintf(stderr, "UNKNOWN"); break;
     }
 
