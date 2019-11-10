@@ -3,6 +3,7 @@
 TAC* makeBinOperation(int type, TAC* code0, TAC* code1);
 TAC* makeIfThen(TAC* code0, TAC* code1);
 TAC* makeWhile(TAC* code0, TAC* code1, HASH_NODE* label);
+TAC* makeFunc(TAC* code0, TAC* code1, TAC* code2);
 
 TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     TAC* newTac;
@@ -104,6 +105,22 @@ TAC* generateCode(AST *ast, HASH_NODE* label){
         case AST_VECREAD:
             return tacJoin(code[0], tacCreate(TAC_VEC, makeTemp(), ast->symbol, code[0]?code[0]->res:0));
             break;
+
+
+        case AST_IDEXP:
+            return tacJoin(code[0], tacCreate(TAC_FUNCCALL, makeTemp(), ast->symbol, 0));
+            break;
+        case AST_LPARAM: 
+            return tacJoin(code[1], tacJoin(code[0], tacCreate(TAC_ARGPUSH, code[0]?code[0]->res:0, 0, 0)));
+            break;
+        case AST_RPARAM:
+            return code[0];
+        case AST_PARAM: 
+            return tacJoin(tacCreate(TAC_PARAMPOP, ast->symbol, 0, 0), code[1]);
+            break;
+        case AST_FUNC:
+            return makeFunc(tacCreate(TAC_SYMBOL, ast->symbol, 0, 0), code[1], code[2]);
+            break;
         default:
             return tacJoin(tacJoin(tacJoin(code[0], code[1]), code[2]), code[3]);
             break;
@@ -139,6 +156,15 @@ TAC* makeWhile(TAC* code0, TAC* code1, HASH_NODE* whileLabel){
     TAC* jumpTacLabel = tacCreate(TAC_LABEL, jumpLabel, 0, 0);
 
     return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(whileTacLabel, code0), whileTac), code1), jumpTac), jumpTacLabel);
+}
+
+TAC* makeFunc(TAC* symbol, TAC* params, TAC* code){
+    return tacJoin
+            (tacJoin
+                (tacJoin
+                    (tacCreate
+                        (TAC_BEGINFUN, symbol->res, 0, 0), params), code),
+            tacCreate(TAC_ENDFUN, symbol->res, 0, 0));
 }
 
 TAC* tacJoin(TAC* l1, TAC* l2){
@@ -180,6 +206,11 @@ void tacPrintSingle(TAC *tac){
         case TAC_PRINT:     fprintf(stderr, "TAC_PRINT"); break;
         case TAC_VEC:       fprintf(stderr, "TAC_VEC"); break;
         case TAC_VECEXP:    fprintf(stderr, "TAC_VECEXP"); break;
+        case TAC_BEGINFUN:  fprintf(stderr, "TAC_BEGINFUN"); break;
+        case TAC_ENDFUN:    fprintf(stderr, "TAC_ENDFUN"); break;
+        case TAC_FUNCCALL:  fprintf(stderr, "TAC_FUNCCALL"); break;
+        case TAC_ARGPUSH:   fprintf(stderr, "TAC_ARGPUSH"); break;
+        case TAC_PARAMPOP:  fprintf(stderr, "TAC_PARAMPOP"); break;
 
         default: fprintf(stderr, "UNKNOWN"); break;
     }
