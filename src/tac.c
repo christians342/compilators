@@ -72,6 +72,15 @@ TAC* generateCode(AST *ast, HASH_NODE* label){
         case AST_GE:
             return makeBinOperation(TAC_GE, code[0], code[1]);
             break;
+        case AST_EQUAL:
+            return makeBinOperation(TAC_EQUAL, code[0], code[1]);
+            break;
+        case AST_DIF:
+            return makeBinOperation(TAC_DIF, code[0], code[1]);
+            break;
+        case AST_NOT:
+            return makeBinOperation(TAC_NOT, code[0], code[1]);
+            break;
         case AST_IF:
         case AST_IFELSE:
             return makeIfThen(code[0], code[1]);
@@ -81,6 +90,20 @@ TAC* generateCode(AST *ast, HASH_NODE* label){
             break;
         case AST_READ:
             return tacCreate(TAC_READ, ast->symbol,0,0);
+            break;
+        case AST_RET: 
+            return tacJoin(code[0], tacCreate(TAC_RET, code[0]?code[0]->res:0, 0, 0));
+            break;
+        case AST_LPRINT:
+        case AST_EPRINT: 
+            return tacJoin(tacJoin(code[0], tacCreate(TAC_PRINT, code[0]?code[0]->res:0, 0, 0)), code[1]);
+            break;
+        case AST_VECEXP:
+            return tacJoin(code[0], tacJoin(code[1], tacCreate(TAC_VECEXP, ast->symbol, code[0]?code[0]->res:0, code[1]?code[1]->res:0)));
+            break;
+        case AST_VECREAD:
+            return tacJoin(code[0], tacCreate(TAC_VEC, makeTemp(), ast->symbol, code[0]?code[0]->res:0));
+            break;
         default:
             return tacJoin(tacJoin(tacJoin(code[0], code[1]), code[2]), code[3]);
             break;
@@ -152,6 +175,12 @@ void tacPrintSingle(TAC *tac){
         case TAC_NOT:       fprintf(stderr, "TAC_NOT"); break;
         case TAC_LE:        fprintf(stderr, "TAC_LE"); break;
         case TAC_GE:        fprintf(stderr, "TAC_GE"); break;
+        case TAC_DIF:       fprintf(stderr, "TAC_DIF"); break;
+        case TAC_RET:       fprintf(stderr, "TAC_RET"); break;
+        case TAC_PRINT:     fprintf(stderr, "TAC_PRINT"); break;
+        case TAC_VEC:       fprintf(stderr, "TAC_VEC"); break;
+        case TAC_VECEXP:    fprintf(stderr, "TAC_VECEXP"); break;
+
         default: fprintf(stderr, "UNKNOWN"); break;
     }
 

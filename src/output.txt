@@ -1,11 +1,14 @@
  int  a =  100;
  int  i =  101;
+ int  v1 [ 10] :  1 2 2 2 2 2 2;
  int main ( int  xy,  int  xz,  int  xw){
 if( a ==  15) then 
  a =  1 +  2 /  i;
  b =  56;
+ v1 [ a] = ( 2 +  2);
  i =  2;
 while( a v  xy .  xz <  xy){
  i =  i -  1;
 read  b ;
+print  "Testando"  "1,2,3" ;
 }}

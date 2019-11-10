@@ -22,6 +22,13 @@
 #define TAC_NOT     15
 #define TAC_LE      16
 #define TAC_GE      17
+#define TAC_EQUAL   18
+#define TAC_DIF     19
+#define TAC_RET     20
+#define TAC_PRINT   21
+#define TAC_VEC     22
+#define TAC_VECEXP  23
+
 
 
 typedef struct tac_node{
