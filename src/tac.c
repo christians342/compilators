@@ -4,6 +4,8 @@ TAC* makeBinOperation(int type, TAC* code0, TAC* code1);
 TAC* makeIfThen(TAC* code0, TAC* code1);
 TAC* makeWhile(TAC* code0, TAC* code1, HASH_NODE* label);
 TAC* makeFunc(TAC* code0, TAC* code1, TAC* code2);
+TAC* makeFor(TAC* code0, TAC* code1, TAC* code2, TAC* code3, TAC* code4, HASH_NODE* label);
+TAC* makeExp(TAC* code);
 
 TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     TAC* newTac;
@@ -23,7 +25,7 @@ TAC* generateCode(AST *ast, HASH_NODE* label){
 
     TAC* code[MAX_SONS]; 
 
-    if(ast->type == AST_WHILE)
+    if(ast->type == AST_WHILE || ast->type == AST_FOR)
         label = makeLabel();
 
     // generateCode for children first
@@ -119,6 +121,8 @@ TAC* generateCode(AST *ast, HASH_NODE* label){
         case AST_FUNC:
             return makeFunc(tacCreate(TAC_SYMBOL, ast->symbol, 0, 0), code[1], code[2]);
             break;
+        case AST_FOR:
+            return makeFor(tacCreate(TAC_SYMBOL, ast->symbol, 0, 0), code[0], code[1], code[2], code[3], label);
         default:
             return tacJoin(tacJoin(tacJoin(code[0], code[1]), code[2]), code[3]);
             break;
@@ -163,6 +167,44 @@ TAC* makeFunc(TAC* symbol, TAC* params, TAC* code){
                     (tacCreate
                         (TAC_BEGINFUN, symbol->res, 0, 0), params), code),
             tacCreate(TAC_ENDFUN, symbol->res, 0, 0));
+}
+
+
+
+TAC* makeFor(TAC* symbol, TAC* exp1, TAC* exp2, TAC* exp3, TAC* cmd, HASH_NODE* forLabel){
+
+    HASH_NODE* jumpLabel = makeLabel();
+
+    TAC* forTac = tacCreate(TAC_FOR, jumpLabel, symbol? symbol->res : 0, 0);
+    TAC* forTacLabel = tacCreate(TAC_LABEL, forLabel, 0, 0);
+
+    TAC* jumpTac = tacCreate(TAC_JUMPFOR, forLabel, 0, 0);
+    TAC* jumpTacLabel = tacCreate(TAC_LABEL, jumpLabel, 0, 0);
+
+    TAC* exp12 = makeExp(exp1);
+    TAC* exp22 = makeExp(exp2);
+    TAC* exp32 = makeExp(exp3);
+
+    return tacJoin(
+                tacJoin(
+                    tacJoin(
+                        tacJoin(
+                            tacJoin(
+                                tacJoin(
+                                    tacJoin(
+                                        tacJoin(forTacLabel, forTac),
+                                    symbol), 
+                                exp12), 
+                            exp22), 
+                        exp32), 
+                    cmd), 
+                jumpTac), 
+            jumpTacLabel);
+}
+
+TAC* makeExp(TAC* code) {
+    return tacCreate(TAC_EXP, code?code->res:0, 0, 0);
+
 }
 
 TAC* tacJoin(TAC* l1, TAC* l2){
@@ -210,8 +252,10 @@ void tacPrintSingle(TAC *tac){
         case TAC_FUNCCALL:  fprintf(stderr, "TAC_FUNCCALL"); break;
         case TAC_ARGPUSH:   fprintf(stderr, "TAC_ARGPUSH"); break;
         case TAC_PARAMPOP:  fprintf(stderr, "TAC_PARAMPOP"); break;
-        case TAC_FOR:       fprintf(stderr, "TAC_PARAMPOP"); break;
+        case TAC_FOR:       fprintf(stderr, "TAC_FOR"); break;
+        case TAC_JUMPFOR:   fprintf(stderr, "TAC_JUMPFOR"); break;
         case TAC_BREAK:     fprintf(stderr, "TAC_BREAK"); break;
+        case TAC_EXP:       fprintf(stderr, "TAC_EXP"); break;
 
         default: fprintf(stderr, "UNKNOWN"); break;
     }

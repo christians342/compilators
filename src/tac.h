@@ -37,6 +37,10 @@
 #define TAC_BREAK    30
 
 
+#define TAC_JUMPFOR  32
+#define TAC_EXP      33
+
+
 
 typedef struct tac_node{
     int type;
