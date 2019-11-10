@@ -162,11 +162,14 @@ TAC* makeWhile(TAC* code0, TAC* code1, HASH_NODE* whileLabel){
 
 TAC* makeFunc(TAC* symbol, TAC* params, TAC* code){
     return tacJoin
-            (tacJoin
                 (tacJoin
-                    (tacCreate
-                        (TAC_BEGINFUN, symbol->res, 0, 0), params), code),
-            tacCreate(TAC_ENDFUN, symbol->res, 0, 0));
+                    (tacJoin
+                        (tacCreate
+                            (TAC_BEGINFUN, symbol->res, 0, 0), 
+                        params), 
+                    code),
+                tacCreate(TAC_ENDFUN, symbol->res, 0, 0)
+            );
 }
 
 
@@ -175,28 +178,28 @@ TAC* makeFor(TAC* symbol, TAC* exp1, TAC* exp2, TAC* exp3, TAC* cmd, HASH_NODE* 
 
     HASH_NODE* jumpLabel = makeLabel();
 
-    TAC* forTac = tacCreate(TAC_FOR, jumpLabel, symbol? symbol->res : 0, 0);
+    TAC* forTac = tacJoin(
+                    tacJoin(
+                        tacJoin(
+                            tacCreate(
+                                TAC_IFZ, jumpLabel, symbol? symbol->res : 0, 0
+                            ),
+                        exp1),
+                    exp2),
+                  exp3);
+
     TAC* forTacLabel = tacCreate(TAC_LABEL, forLabel, 0, 0);
 
-    TAC* jumpTac = tacCreate(TAC_JUMPFOR, forLabel, 0, 0);
+    TAC* jumpTac = tacCreate(TAC_JUMP, forLabel, 0, 0);
     TAC* jumpTacLabel = tacCreate(TAC_LABEL, jumpLabel, 0, 0);
-
-    TAC* exp12 = makeExp(exp1);
-    TAC* exp22 = makeExp(exp2);
-    TAC* exp32 = makeExp(exp3);
 
     return tacJoin(
                 tacJoin(
                     tacJoin(
-                        tacJoin(
-                            tacJoin(
-                                tacJoin(
+                        
                                     tacJoin(
                                         tacJoin(forTacLabel, forTac),
                                     symbol), 
-                                exp12), 
-                            exp22), 
-                        exp32), 
                     cmd), 
                 jumpTac), 
             jumpTacLabel);

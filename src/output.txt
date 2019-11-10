@@ -1,5 +1,12 @@
  int main (){
-for (l: 1 +  1,  10,  1)
+while( i <  10){
+ i = incn ( i,  1 );
+ a = incn ( a,  1 );
+};
+print  "Incrementado algumas vezes a fica "  a "\n" ;
+if( a ==  15) then 
+print  "A=15\n" ;
+for (l: 1,  10,  1)
 print  "." ;
 print  "\n" ;
 if( a ==  15 v  a ==  17) then 
