@@ -33,6 +33,8 @@
 #define TAC_FUNCCALL 26
 #define TAC_ARGPUSH  27
 #define TAC_PARAMPOP 28
+#define TAC_FOR      29
+#define TAC_BREAK    30
 
 
 

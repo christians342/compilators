@@ -105,8 +105,6 @@ TAC* generateCode(AST *ast, HASH_NODE* label){
         case AST_VECREAD:
             return tacJoin(code[0], tacCreate(TAC_VEC, makeTemp(), ast->symbol, code[0]?code[0]->res:0));
             break;
-
-
         case AST_IDEXP:
             return tacJoin(code[0], tacCreate(TAC_FUNCCALL, makeTemp(), ast->symbol, 0));
             break;
@@ -202,6 +200,7 @@ void tacPrintSingle(TAC *tac){
         case TAC_LE:        fprintf(stderr, "TAC_LE"); break;
         case TAC_GE:        fprintf(stderr, "TAC_GE"); break;
         case TAC_DIF:       fprintf(stderr, "TAC_DIF"); break;
+        case TAC_EQUAL:     fprintf(stderr, "TAC_EQUAL"); break;
         case TAC_RET:       fprintf(stderr, "TAC_RET"); break;
         case TAC_PRINT:     fprintf(stderr, "TAC_PRINT"); break;
         case TAC_VEC:       fprintf(stderr, "TAC_VEC"); break;
@@ -211,6 +210,8 @@ void tacPrintSingle(TAC *tac){
         case TAC_FUNCCALL:  fprintf(stderr, "TAC_FUNCCALL"); break;
         case TAC_ARGPUSH:   fprintf(stderr, "TAC_ARGPUSH"); break;
         case TAC_PARAMPOP:  fprintf(stderr, "TAC_PARAMPOP"); break;
+        case TAC_FOR:       fprintf(stderr, "TAC_PARAMPOP"); break;
+        case TAC_BREAK:     fprintf(stderr, "TAC_BREAK"); break;
 
         default: fprintf(stderr, "UNKNOWN"); break;
     }
