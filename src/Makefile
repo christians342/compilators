@@ -1,9 +1,9 @@
 #
-# UFRGS - Compiladores B - Amanda Goveia e Christian Schmitz - 2019/2 - Etapa 2
+# UFRGS - Compiladores B - Amanda Goveia e Christian Schmitz - 2019/2 - Etapa 5
 #
 # Makefile for single compiler call
 
-etapa3: y.tab.o lex.yy.o main.o hash.o astree.o semantic.o tac.o
+etapa5: y.tab.o lex.yy.o main.o hash.o astree.o semantic.o tac.o
 	gcc -o etapa5 lex.yy.o main.o hash.o astree.o semantic.o tac.o
 lex.yy.o: lex.yy.c y.tab.c
 	gcc -c  lex.yy.c  

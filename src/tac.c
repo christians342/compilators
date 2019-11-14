@@ -5,7 +5,9 @@ TAC* makeIfThen(TAC* code0, TAC* code1);
 TAC* makeWhile(TAC* code0, TAC* code1, HASH_NODE* label, HASH_NODE* jumpLabel);
 TAC* makeFunc(TAC* code0, TAC* code1, TAC* code2);
 TAC* makeFor(TAC* code0, TAC* code1, TAC* code2, TAC* code3, TAC* code4, HASH_NODE* label, HASH_NODE* jumpLabel);
+TAC* makeForTo(HASH_NODE* symbol, TAC* exp1, TAC* exp2, TAC* exp3, TAC* cmd, HASH_NODE* forLabel, HASH_NODE* jumpLabel);
 TAC* makeExp(TAC* code);
+TAC* makeAssign(TAC* code, HASH_NODE* node);
 
 TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     TAC* newTac;
@@ -41,11 +43,7 @@ TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel){
             return tacCreate(TAC_SYMBOL, ast->symbol, 0, 0);
             break;
         case AST_ASS:
-            return tacJoin(code[0],
-                           tacCreate(TAC_MOVE,
-                                     ast->symbol,
-                                     code[0]? code[0]->res : 0,
-                                     0));
+            return makeAssign(code[0], ast->symbol);
             break;
         case AST_ADD:
             return makeBinOperation(TAC_ADD, code[0], code[1]);
@@ -94,7 +92,7 @@ TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel){
             return makeWhile(code[0], code[1], loopLabel, jumpLabel);
             break;
         case AST_READ:
-            return tacCreate(TAC_READ, ast->symbol,0,0);
+            return tacCreate(TAC_READ, ast->symbol, 0, 0);
             break;
         case AST_RET: 
             return tacJoin(code[0], tacCreate(TAC_RET, code[0]?code[0]->res:0, 0, 0));
@@ -124,7 +122,7 @@ TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel){
             return makeFunc(tacCreate(TAC_SYMBOL, ast->symbol, 0, 0), code[1], code[2]);
             break;
         case AST_FOR:
-            return makeFor(tacCreate(TAC_SYMBOL, ast->symbol, 0, 0), code[0], code[1], code[2], code[3], loopLabel, jumpLabel);
+            return makeForTo(ast->symbol, code[0], code[1], code[2], code[3], loopLabel, jumpLabel);
             break;
         case AST_BREAK:
             return tacCreate(TAC_JUMP, jumpLabel, 0, 0);
@@ -164,18 +162,17 @@ TAC* makeWhile(TAC* code0, TAC* code1, HASH_NODE* whileLabel, HASH_NODE* jumpLab
 }
 
 TAC* makeFunc(TAC* symbol, TAC* params, TAC* code){
-    return tacJoin
-                (tacJoin
-                    (tacJoin
-                        (tacCreate
-                            (TAC_BEGINFUN, symbol->res, 0, 0), 
-                        params), 
-                    code),
-                tacCreate(TAC_ENDFUN, symbol->res, 0, 0)
-            );
+    return tacJoin(
+            tacJoin(
+                tacJoin(
+                    tacCreate(TAC_BEGINFUN, symbol->res, 0, 0), params), 
+                code), 
+            tacCreate(TAC_ENDFUN, symbol->res, 0, 0));
 }
 
-
+TAC* makeAssign(TAC* code, HASH_NODE* symbol) {
+    return tacJoin(code, tacCreate(TAC_MOVE, symbol, code? code->res : 0, 0));
+}
 
 TAC* makeFor(TAC* symbol, TAC* exp1, TAC* exp2, TAC* exp3, TAC* cmd, HASH_NODE* forLabel, HASH_NODE* jumpLabel){
     TAC* forTac = tacJoin(
@@ -195,14 +192,48 @@ TAC* makeFor(TAC* symbol, TAC* exp1, TAC* exp2, TAC* exp3, TAC* cmd, HASH_NODE* 
 
     return tacJoin(
                 tacJoin(
-                    tacJoin(
-                        
-                                    tacJoin(
-                                        tacJoin(forTacLabel, forTac),
-                                    symbol), 
+                    tacJoin(                        
+                            tacJoin(
+                                tacJoin(forTacLabel, forTac),
+                            symbol), 
                     cmd), 
                 jumpTac), 
             jumpTacLabel);
+}
+
+/* FOR (P = Q TO R) S */
+
+//KW_FOR '(' TK_IDENTIFIER ':' exp ',' exp ',' exp ')' cmd
+TAC* makeForTo(HASH_NODE* symbol, TAC* exp1, TAC* exp2, TAC* exp3, TAC* cmd, HASH_NODE* forLabel, HASH_NODE* jumpLabel) {
+      // P = Q
+    TAC* tacAttr = makeAssign(exp1, symbol);
+
+    // ANTES DE R
+    TAC *tacLabelBeforeForCondition = tacCreate(TAC_LABEL, forLabel, 0, 0);
+
+    // P <= R ?
+
+    TAC *tacCondition = tacCreate(TAC_LE, makeTemp(), symbol, exp2 ? exp2->res : 0);
+
+    /* INCREMENTO DO P */
+    TAC *tacIncrement = tacCreate(TAC_INCREMENT, symbol, exp3 ? exp3->res : 0, 0);
+
+    /* O QUE VEM DEPOIS DO S */
+    TAC *tacLabelAfterForLoop = tacCreate(TAC_LABEL, jumpLabel, 0, 0);
+
+    /* SE P MAIOR QUE R ENTÃO VAI PRA DEPOIS DE S (O QUE ESTÁ FORA DO LOOP */
+    TAC *tacIfz = tacCreate(TAC_IFZ, jumpLabel, tacCondition ? tacCondition->res : 0, 0);
+
+    /* CONTINUAÇÃO DO LOOP */
+    TAC *tacJumpToBeginOfFor = tacCreate(TAC_JUMP, forLabel, 0, 0);
+
+    return tacJoin(tacAttr,                                  
+        tacJoin(tacLabelBeforeForCondition,  
+        tacJoin(tacCondition,
+        tacJoin(tacIfz,
+        tacJoin(cmd,
+        tacJoin(tacIncrement,
+        tacJoin(tacJumpToBeginOfFor, tacLabelAfterForLoop)))))));
 }
 
 TAC* makeExp(TAC* code) {
@@ -224,6 +255,8 @@ TAC* tacJoin(TAC* l1, TAC* l2){
 
 void tacPrintSingle(TAC *tac){
     if(!tac) return;
+
+    if(tac->type == TAC_SYMBOL) return;
 
     fprintf(stderr, "TAC(");
     switch(tac->type){
@@ -255,10 +288,9 @@ void tacPrintSingle(TAC *tac){
         case TAC_FUNCCALL:  fprintf(stderr, "TAC_FUNCCALL"); break;
         case TAC_ARGPUSH:   fprintf(stderr, "TAC_ARGPUSH"); break;
         case TAC_PARAMPOP:  fprintf(stderr, "TAC_PARAMPOP"); break;
-        case TAC_FOR:       fprintf(stderr, "TAC_FOR"); break;
-        case TAC_JUMPFOR:   fprintf(stderr, "TAC_JUMPFOR"); break;
         case TAC_BREAK:     fprintf(stderr, "TAC_BREAK"); break;
         case TAC_EXP:       fprintf(stderr, "TAC_EXP"); break;
+        case TAC_INCREMENT: fprintf(stderr, "TAC_INCREMENT"); break;
 
         default: fprintf(stderr, "UNKNOWN"); break;
     }
