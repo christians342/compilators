@@ -91,7 +91,7 @@ TAC* generateCode(AST *ast, HASH_NODE* label){
             return makeWhile(code[0], code[1], label);
             break;
         case AST_READ:
-            return tacCreate(TAC_READ, ast->symbol,0,0);
+            return tacCreate(TAC_READ, ast->symbol, 0, 0);
             break;
         case AST_RET: 
             return tacJoin(code[0], tacCreate(TAC_RET, code[0]?code[0]->res:0, 0, 0));
@@ -217,6 +217,8 @@ TAC* tacJoin(TAC* l1, TAC* l2){
 
 void tacPrintSingle(TAC *tac){
     if(!tac) return;
+
+    if(tac->type == TAC_SYMBOL) return;
 
     fprintf(stderr, "TAC(");
     switch(tac->type){
