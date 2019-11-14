@@ -55,7 +55,7 @@ typedef struct tac_node{
 TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2);
 void tacPrintSingle(TAC *tac);
 void tacPrintBackwards(TAC *tac);
-TAC* generateCode(AST *ast, HASH_NODE* label);
+TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel);
 TAC* tacJoin(TAC* tac1, TAC* tac2);
 
 #endif

@@ -43,7 +43,7 @@ int hashAddress(char *text);
 HASH_NODE* hashFind(char *text);
 HASH_NODE* hashInsert(int type, char *text, int datatype);
 HASH_NODE* makeTemp(void);
-HASH_NODE* makeLabel(void);
+HASH_NODE* makeLabel(char *prefix);
 void hashPrint(void);
 int hashCheckUndeclared(void);
 

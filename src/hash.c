@@ -56,11 +56,11 @@ HASH_NODE* makeTemp(void){
     return hashInsert(0, name, 0);
 }
 
-HASH_NODE* makeLabel(void){
+HASH_NODE* makeLabel(char* prefix){
     static int serialNumber = 0;
     static char name[100];
 
-    sprintf(name, "__label%d__", serialNumber++);
+    sprintf(name, "__%s_label%d__", prefix, serialNumber++);
     return hashInsert(0, name, 0);
 }
 
