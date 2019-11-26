@@ -85,7 +85,9 @@ program:
                                                                 astreePrint($1, 0);
                                                                 //checkSemantics($1);
                                                                 fprintf(stderr, "%d semantic errors.\n", getSemanticErrors());
-                                                                tacPrintBackwards(generateCode($1, 0, 0));}    
+                                                                
+                                                                tacPrintBackwards(generateCode($1, 0, 0));
+                                                                generateASM(generateCode($1, 0, 0), fopen("asm.s", "w"));}    
         ;
 
 ldecl:

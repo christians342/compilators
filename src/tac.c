@@ -20,6 +20,16 @@ TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     return newTac;
 }
 
+void generateASM(TAC* tac, FILE* fout){
+    if (!tac) return;
+    if(tac->prev) generateASM(tac->prev, fout);
+
+    switch(tac->type){
+        
+    }
+    return;
+}
+
 TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel){
     if(!ast) return 0;
 
