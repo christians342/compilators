@@ -84,3 +84,7 @@ int hashCheckUndeclared(void){
             }
     return error;
 }
+
+HASH_NODE** getTable(){
+    return Table;
+}

@@ -46,5 +46,6 @@ HASH_NODE* makeTemp(void);
 HASH_NODE* makeLabel(char *prefix);
 void hashPrint(void);
 int hashCheckUndeclared(void);
+HASH_NODE** getTable();
 
 #endif

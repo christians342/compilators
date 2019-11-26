@@ -20,7 +20,23 @@ TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     return newTac;
 }
 
+void generateASMVariables(FILE* fout){
+    HASH_NODE** table = getTable();
+
+    for(int i =0; i < HASH_SIZE; i++){
+        for(HASH_NODE* node = table[i]; node; node = node->next){
+            if(strncmp(node->text, "__temp", 6) == 0) {
+                fprintf(fout, "\t.globl	_%s\n"
+                             "\t_%s:\n"
+                             "\t.long	4\n", node->text, node->text);
+            }
+        }
+    }
+}
+
 void generateASM(TAC* tac, FILE* fout){
+    generateASMVariables(fout);
+
     if (!tac) return;
     if(tac->prev) generateASM(tac->prev, fout);
 
