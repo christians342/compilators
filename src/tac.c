@@ -20,25 +20,27 @@ TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     return newTac;
 }
 
-void generateASMVariables(FILE* fout){
-    HASH_NODE** table = getTable();
-
-    for(int i =0; i < HASH_SIZE; i++){
-        for(HASH_NODE* node = table[i]; node; node = node->next){
-            if(strncmp(node->text, "__temp", 6) == 0) {
-                fprintf(fout, "\t.globl	_%s\n"
-                             "\t_%s:\n"
-                             "\t.long	4\n", node->text, node->text);
-            }
-        }
+void generateASMVariables(FILE* fout, AST* node){
+    if(!node) return;
+    if(node->type == AST_VARDEC){
+        fprintf(fout, "_%s:\n"
+                        "\t.globl	_%s\n"
+                        "\t.long	4\n"
+                        "\t.align 4\n"
+                        "\t.type  _%s, @object\n"
+                        "\t.size	_%s, 4\n"
+                        , node->symbol->text, node->symbol->text, node->symbol->text, node->symbol->text);
     }
+
+    for(int i = 0; i < MAX_SONS; i++){
+		generateASMVariables(fout, node->son[i]);
+	}
 }
 
-void generateASM(TAC* tac, FILE* fout){
-    generateASMVariables(fout);
+void generateASM(TAC* tac, FILE* fout, AST* node){
+    generateASMVariables(fout, node);
 
     if (!tac) return;
-    if(tac->prev) generateASM(tac->prev, fout);
 
     switch(tac->type){
         

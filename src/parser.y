@@ -87,7 +87,7 @@ program:
                                                                 fprintf(stderr, "%d semantic errors.\n", getSemanticErrors());
                                                                 
                                                                 tacPrintBackwards(generateCode($1, 0, 0));
-                                                                generateASM(generateCode($1, 0, 0), fopen("asm.s", "w"));}    
+                                                                generateASM(generateCode($1, 0, 0), fopen("asm.s", "w"), getRoot());}    
         ;
 
 ldecl:
