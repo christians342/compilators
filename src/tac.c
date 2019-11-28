@@ -80,8 +80,7 @@ void generateASM(TAC* tac, FILE* fout, AST* node){
                             "cmpl	%%eax, %%edx\n"
                             "jle .L%d\n",
                             tac->op1->text, tac->op2->text, l);
-                            l++;
-                
+            l++;                
             break;
 
         case TAC_LESSER:
@@ -91,7 +90,7 @@ void generateASM(TAC* tac, FILE* fout, AST* node){
                             "cmpl	%%eax, %%edx\n"
                             "jge .L%d\n",
                             tac->op1->text, tac->op2->text, l);
-                            l++;
+            l++;
             break;
 
         case TAC_LE:
@@ -101,7 +100,7 @@ void generateASM(TAC* tac, FILE* fout, AST* node){
                             "cmpl	%%eax, %%edx\n"
                             "jg .L%d\n",
                             tac->op1->text, tac->op2->text, l);
-                            l++;
+            l++;
             break;
 
         case TAC_GE:
@@ -111,7 +110,31 @@ void generateASM(TAC* tac, FILE* fout, AST* node){
                             "cmpl	%%eax, %%edx\n"
                             "jl .L%d\n",
                             tac->op1->text, tac->op2->text, l);
-                            l++;
+            l++;
+            break;
+
+        case TAC_AND:
+            fprintf(fout, "##TAC_AND\n"
+                            "movl	%s(%%rip), %%eax\n"
+                            "testl	%%eax, %%eax\n"
+                            "je	.L%d\n"
+                            "movl	%s(%%rip), %%eax\n"
+                            "testl	%%eax, %%eax\n"
+                            "je	.L%d\n",
+                            tac->op1->text, l, tac->op2->text, l);
+            l++;
+            break;
+
+        case TAC_OR:
+            fprintf(fout, "##TAC_OR\n"
+                          "movl	%s(%%rip), %%eax\n"
+                          "testl %%eax, %%eax\n"
+                          "jne .L%d\n"
+                          "movl	%s(%%rip), %%eax\n"
+                          "testl %%eax, %%eax\n"
+                          "je .L%d\n",
+                           tac->op1->text, l, tac->op2->text, l+1);
+            l+=2;
             break;
 
     }
