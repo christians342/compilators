@@ -7,6 +7,8 @@ TAC* makeFunc(TAC* code0, TAC* code1, TAC* code2);
 TAC* makeFor(HASH_NODE* symbol, TAC* exp1, TAC* exp2, TAC* exp3, TAC* cmd, HASH_NODE* forLabel, HASH_NODE* jumpLabel);
 TAC* makeAssign(TAC* code, HASH_NODE* node);
 
+int l = 0;
+
 TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     TAC* newTac;
     newTac = (TAC*) calloc(1, sizeof(TAC));
@@ -55,7 +57,7 @@ void generateASM(TAC* tac, FILE* fout, AST* node){
 	                      "addl	%s(%%rip), %%eax\n" 
 	                      "movl	%%eax, %s(%%rip)\n",
                     tac->op1->text, tac->op2->text, tac->res->text);
-        break;
+            break;
 
         case TAC_SUB:
             fprintf(fout, "##TAC_SUB\n"
@@ -63,13 +65,55 @@ void generateASM(TAC* tac, FILE* fout, AST* node){
 	                      "addl	%s(%%rip), %%eax\n" 
 	                      "movl	%%eax, %s(%%rip)\n",
                     tac->op1->text, tac->op2->text, tac->res->text);
-        break;
+            break;
 
         /*case TAC_MUL:
             fprintf(fout, "movl	%s(%%rip), %eax
 	                       subl	%s(%%rip), %eax
 	                       movl	%eax, %s(%%rip)",
                            tac->op1->text, tac->op2->text, tac->res->text);*/
+
+        case TAC_GREATER:
+            fprintf(fout, "##TAC_GREATER\n"
+                            "movl	%s(%%rip), %%edx\n"
+                            "movl	%s(%%rip), %%eax\n"
+                            "cmpl	%%eax, %%edx\n"
+                            "jle .L%d\n",
+                            tac->op1->text, tac->op2->text, l);
+                            l++;
+                
+            break;
+
+        case TAC_LESSER:
+            fprintf(fout, "##TAC_LESSER\n"
+                            "movl	%s(%%rip), %%edx\n"
+                            "movl	%s(%%rip), %%eax\n"
+                            "cmpl	%%eax, %%edx\n"
+                            "jge .L%d\n",
+                            tac->op1->text, tac->op2->text, l);
+                            l++;
+            break;
+
+        case TAC_LE:
+            fprintf(fout, "##TAC_LE\n"
+                            "movl	%s(%%rip), %%edx\n"
+                            "movl	%s(%%rip), %%eax\n"
+                            "cmpl	%%eax, %%edx\n"
+                            "jg .L%d\n",
+                            tac->op1->text, tac->op2->text, l);
+                            l++;
+            break;
+
+        case TAC_GE:
+            fprintf(fout, "##TAC_GE\n"
+                            "movl	%s(%%rip), %%edx\n"
+                            "movl	%s(%%rip), %%eax\n"
+                            "cmpl	%%eax, %%edx\n"
+                            "jl .L%d\n",
+                            tac->op1->text, tac->op2->text, l);
+                            l++;
+            break;
+
     }
     return;
 }
