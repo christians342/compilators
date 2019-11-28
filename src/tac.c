@@ -42,23 +42,27 @@ void generateASM(TAC* tac, FILE* fout, AST* node){
 
     if (!tac) return;
 
-    switch(tac->type){  
-        case: TAC_ADD:
-            fprintf(fout, "movl	%s(%rip), %eax
-	                       addl	%s(%rip), %eax
-	                       movl	%eax, %s(%rip)",
-                           tac->op1->text, tac->op2->text, tac->res->text);
+    switch(tac->type){ 
+        case TAC_ADD:
+            fprintf(fout, "##TAC ADD\n"
+                          "movl	%s(%%rip), %%eax\n" 
+	                      "addl	%s(%%rip), %%eax\n" 
+	                      "movl	%%eax, %s(%%rip)\n",
+                    tac->op1->text, tac->op2->text, tac->res->text);
+            break;
 
         case TAC_SUB:
-            fprintf(fout, "movl	%s(%rip), %eax
-	                       subl	%s(%rip), %eax
-	                       movl	%eax, %s(%rip)",
-                           tac->op1->text, tac->op2->text, tac->res->text);
+            fprintf(fout, "##TAC SUB\n"
+                          "movl	%s(%%rip), %%eax\n" 
+	                      "addl	%s(%%rip), %%eax\n" 
+	                      "movl	%%eax, %s(%%rip)\n",
+                    tac->op1->text, tac->op2->text, tac->res->text);
+            break;
 
         /*case TAC_MUL:
-            fprintf(fout, "movl	%s(%rip), %eax
-	                       subl	%s(%rip), %eax
-	                       movl	%eax, %s(%rip)",
+            fprintf(fout, "movl	%s(%%rip), %eax
+	                       subl	%s(%%rip), %eax
+	                       movl	%eax, %s(%%rip)",
                            tac->op1->text, tac->op2->text, tac->res->text);*/
     }
     return;
