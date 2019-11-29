@@ -22,14 +22,17 @@ TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
 
 void generateASMVariables(FILE* fout, AST* node){
     if(!node) return;
-    if(node->type == AST_VARDEC){
-        fprintf(fout, "_%s:\n"
+    
+    switch(node->type){
+        case AST_VARDEC:
+            fprintf(fout, "_%s:\n"
                         "\t.globl	_%s\n"
                         "\t.long	4\n"
                         "\t.align 4\n"
                         "\t.type  _%s, @object\n"
                         "\t.size	_%s, 4\n"
                         , node->symbol->text, node->symbol->text, node->symbol->text, node->symbol->text);
+            break;
     }
 
     for(int i = 0; i < MAX_SONS; i++){
@@ -43,17 +46,30 @@ void generateASM(TAC* tac, FILE* fout, AST* node){
     if (!tac) return;
 
     switch(tac->type){  
-        case: TAC_ADD:
-            fprintf(fout, "movl	%s(%rip), %eax
-	                       addl	%s(%rip), %eax
-	                       movl	%eax, %s(%rip)",
+        case TAC_ADD:
+            fprintf(fout, "movl	%s(%%rip), %%eax"
+	                      "addl	%s(%%rip), %%eax"
+	                      "movl	%%eax, %s(%%rip)",
                            tac->op1->text, tac->op2->text, tac->res->text);
+            break;
 
         case TAC_SUB:
-            fprintf(fout, "movl	%s(%rip), %eax
-	                       subl	%s(%rip), %eax
-	                       movl	%eax, %s(%rip)",
+            fprintf(fout, "movl	%s(%%rip), %%eax"
+	                      "subl	%s(%%rip), %%eax"
+	                      "movl	%%eax, %s(%%rip)",
                            tac->op1->text, tac->op2->text, tac->res->text);
+            break;
+
+        case TAC_BEGINFUN:
+             fprintf(fout, "\t.globl	%s\n"
+	                       "\t.type	%s, @function\n"
+	                       "%s:\n"
+                           "\tpushq	%%rbp"
+                           "\tmovq	%%rsp, %%rbp"
+                           "\tpopq	%%rbp"
+                           "\tret",
+                           tac->res->text, tac->res->text, tac->res->text);
+            break;
 
         /*case TAC_MUL:
             fprintf(fout, "movl	%s(%rip), %eax
