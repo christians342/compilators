@@ -249,13 +249,13 @@ TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel){
         case AST_IDEXP:
             return tacJoin(code[0], tacCreate(TAC_FUNCCALL, makeTemp(), ast->symbol, 0));
             break;
-        case AST_LPARAM: 
-            return tacJoin(code[1], tacJoin(code[0], tacCreate(TAC_ARGPUSH, code[0]?code[0]->res:0, 0, 0)));
-            break;
+        //case AST_LPARAM: 
+        //    return tacJoin(code[1], tacJoin(code[0], tacCreate(TAC_ARGPUSH, code[0]?code[0]->res:0, 0, 0)));
+        //    break;
         case AST_RPARAM:
             return code[0];
         case AST_PARAM: 
-            return tacJoin(tacCreate(TAC_PARAMPOP, ast->symbol, 0, 0), code[1]);
+            return tacJoin(tacCreate(TAC_PARAM, ast->symbol, 0, 0), code[1]);
             break;
         case AST_FUNC:
             return makeFunc(tacCreate(TAC_SYMBOL, ast->symbol, 0, 0), code[1], code[2]);
@@ -383,8 +383,7 @@ void tacPrintSingle(TAC *tac){
         case TAC_BEGINFUN:  fprintf(stderr, "TAC_BEGINFUN"); break;
         case TAC_ENDFUN:    fprintf(stderr, "TAC_ENDFUN"); break;
         case TAC_FUNCCALL:  fprintf(stderr, "TAC_FUNCCALL"); break;
-        case TAC_ARGPUSH:   fprintf(stderr, "TAC_ARGPUSH"); break;
-        case TAC_PARAMPOP:  fprintf(stderr, "TAC_PARAMPOP"); break;
+        case TAC_PARAM:     fprintf(stderr, "TAC_PARAM"); break;
         case TAC_BREAK:     fprintf(stderr, "TAC_BREAK"); break;
         case TAC_EXP:       fprintf(stderr, "TAC_EXP"); break;
         case TAC_INCREMENT: fprintf(stderr, "TAC_INCREMENT"); break;

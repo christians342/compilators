@@ -36,6 +36,7 @@
 #define TAC_FOR       29
 #define TAC_BREAK     30
 #define TAC_INCREMENT 31
+#define TAC_PARAM     32
 
 
 #define TAC_JUMPFOR  32
