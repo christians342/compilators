@@ -36,7 +36,7 @@ void generateASMVariables(AST* node, FILE* fout){
                         "\t.globl	_%s\n"
                         "\t.type  _%s, @object\n"
                         , node->symbol->text, node->symbol->text, node->symbol->text);
-            if(node->son[0]->type == AST_INT){
+            if(node->son[0]->type == AST_INT || node->son[0]->type == AST_FLOAT){
                 fprintf(fout,
                         "\t.long	%s\n"
                         "\t.align   4\n"
@@ -52,21 +52,14 @@ void generateASMVariables(AST* node, FILE* fout){
             }
             if(node->son[0]->type == AST_BYTE){
                 fprintf(fout,
-                        "\t.long	%s\n"
-                        "\t.align   4\n"
-                        "\t.size	_%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
+                        "\t.byte	%d\n"
+                        "\t.size	_%s, 1\n", node->son[1]->symbol->text[1], node->symbol->text);
             }
             if(node->son[0]->type == AST_LONG){
                 fprintf(fout,
-                        "\t.long	%s\n"
-                        "\t.align   4\n"
-                        "\t.size	_%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
-            }
-            if(node->son[0]->type == AST_FLOAT){
-                fprintf(fout,
-                        "\t.long	%s\n"
-                        "\t.align   4\n"
-                        "\t.size	_%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
+                        "\t.quad	%s\n"
+                        "\t.align   8\n"
+                        "\t.size	_%s, 8\n", node->son[1]->symbol->text, node->symbol->text);
             }
             break;
         default:
