@@ -22,17 +22,52 @@ TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2){
     return newTac;
 }
 
+int booleanToInt(char *boolean){
+    if(strncmp(boolean, "TRUE", 4))
+        return 1;
+    return 0;
+}
+
 void generateASMVariables(AST* node, FILE* fout){
     if(!node) return;
     switch(node->type){
         case AST_VARDEC:
             fprintf(fout, "_%s:\n"
                         "\t.globl	_%s\n"
-                        "\t.long	4\n"
-                        "\t.align 4\n"
                         "\t.type  _%s, @object\n"
-                        "\t.size	_%s, 4\n"
-                        , node->symbol->text, node->symbol->text, node->symbol->text, node->symbol->text);
+                        , node->symbol->text, node->symbol->text, node->symbol->text);
+            if(node->son[0]->type == AST_INT){
+                fprintf(fout,
+                        "\t.long	%s\n"
+                        "\t.align   4\n"
+                        "\t.size	_%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
+            }
+            if(node->son[0]->type == AST_BOOL){
+                fprintf(fout,
+                        "\t.long	%d\n"
+                        "\t.align   4\n"
+                        "\t.size	_%s, 4\n",
+                        booleanToInt(node->symbol->text), 
+                        node->symbol->text);
+            }
+            if(node->son[0]->type == AST_BYTE){
+                fprintf(fout,
+                        "\t.long	%s\n"
+                        "\t.align   4\n"
+                        "\t.size	_%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
+            }
+            if(node->son[0]->type == AST_LONG){
+                fprintf(fout,
+                        "\t.long	%s\n"
+                        "\t.align   4\n"
+                        "\t.size	_%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
+            }
+            if(node->son[0]->type == AST_FLOAT){
+                fprintf(fout,
+                        "\t.long	%s\n"
+                        "\t.align   4\n"
+                        "\t.size	_%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
+            }
             break;
         default:
             break;
