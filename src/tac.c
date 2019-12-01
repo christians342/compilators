@@ -93,26 +93,49 @@ void generateASM(TAC* tac, FILE* fout){
 
             break;
         case TAC_ADD:
-            fprintf(fout, "\n##TAC_ADD\n"
-                        "\tmovl	%s(%%rip), %%eax\n" 
-                        "\taddl	%s(%%rip), %%eax\n" 
-                        "\tmovl	%%eax, %s(%%rip)\n",
-                    tac->op1->text, tac->op2->text, tac->res->text);
+            fprintf(fout, "\n##TAC_SUB\n"
+                        "\tmovl	%s(%%rip), %%edx\n"
+                        "\tmovl	%s(%%rip), %%eax\n"
+                        "\taddl	%%eax, %%edx\n"
+                        "\tmovl	%%edx, %%eax\n"
+                        "\tmovl	%%eax, %s(%%rip)\n"
+                        "\tmovl	$0, %%eax\n",
+                        tac->op1->text, tac->op2->text, tac->res->text);
+
             break;
 
         case TAC_SUB:
             fprintf(fout, "\n##TAC_SUB\n"
-                        "\tmovl	%s(%%rip), %%eax\n" 
-                        "\taddl	%s(%%rip), %%eax\n" 
-                        "\tmovl	%%eax, %s(%%rip)\n",
-                    tac->op1->text, tac->op2->text, tac->res->text);
+                        "\tmovl	%s(%%rip), %%edx\n"
+                        "\tmovl	%s(%%rip), %%eax\n"
+                        "\tsubl	%%eax, %%edx\n"
+                        "\tmovl	%%edx, %%eax\n"
+                        "\tmovl	%%eax, %s(%%rip)\n"
+                        "\tmovl	$0, %%eax\n",
+                        tac->op1->text, tac->op2->text, tac->res->text);
             break;
 
-        /*case TAC_MUL:
-            fprintf(fout, "movl	%s(%%rip), %eax
-                        subl	%s(%%rip), %eax
-                        movl	%eax, %s(%%rip)",
-                        tac->op1->text, tac->op2->text, tac->res->text);*/
+        case TAC_MUL:
+            fprintf(fout, "\n##TAC_MUL\n"
+                            "\tmovl	 %s(%%rip), %%edx\n"
+                            "\tmovl	 %s(%%rip), %%eax\n"
+                            "\timull %%edx, %%eax\n"
+                            "\tmovl	 %%eax, %s(%%rip)\n"
+                            "\tmovl	 $0, %%eax\n",
+                            tac->op1->text, tac->op2->text, tac->res->text);
+            break;
+
+        case TAC_DIV:
+            fprintf(fout, "\n##TAC_DIV\n"
+                            "\tmovl	%s(%%rip), %%eax\n"
+                            "\tmovl	%s(%%rip), %%ecx\n"
+                            "\tcltd\n"
+                            "\tidivl %%ecx\n"
+                            "\tmovl	%%eax, %s(%%rip)\n"
+                            "\tmovl	$0, %%eax\n",
+                            tac->op1->text, tac->op2->text, tac->res->text);
+            break;
+
 
         case TAC_GREATER:
             fprintf(fout, "\n##TAC_GREATER\n"
