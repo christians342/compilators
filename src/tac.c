@@ -178,7 +178,7 @@ TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel){
     switch(ast->type){
         case AST_SYMBOL:
             return tacCreate(TAC_SYMBOL, ast->symbol, 0, 0);
-            break;
+            break; 
         case AST_ASS:
             return makeAssign(code[0], ast->symbol);
             break;
@@ -235,6 +235,8 @@ TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel){
             return tacJoin(code[0], tacCreate(TAC_RET, code[0]?code[0]->res:0, 0, 0));
             break;
         case AST_LPRINT:
+            return tacJoin(tacJoin(code[0], tacCreate(TAC_PRINT, ast->symbol, 0, 0)), code[1]);
+            break;
         case AST_EPRINT: 
             return tacJoin(tacJoin(code[0], tacCreate(TAC_PRINT, code[0]?code[0]->res:0, 0, 0)), code[1]);
             break;
