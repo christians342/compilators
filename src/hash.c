@@ -48,19 +48,19 @@ HASH_NODE *hashInsert(int type, char *text, int datatype){
     return newNode;
 }
 
-HASH_NODE* makeTemp(void){
+HASH_NODE* makeTemp(int datatype){
     static int serialNumber = 0;
     static char name[100];
 
     sprintf(name, "__temp%d__", serialNumber++);
-    return hashInsert(0, name, 0);
+    return hashInsert(0, name, datatype);
 }
 
 HASH_NODE* makeLabel(char* prefix){
     static int serialNumber = 0;
     static char name[100];
 
-    sprintf(name, "__%s_label%d__", prefix, serialNumber++);
+    sprintf(name, "__label_%s_%d__", prefix, serialNumber++);
     return hashInsert(0, name, 0);
 }
 
@@ -69,7 +69,7 @@ void hashPrint(void){
     HASH_NODE *node;
     for(i=0; i<HASH_SIZE; ++i)
         for(node=Table[i]; node; node = node->next)
-            fprintf(stderr," Table[%d] has %s\n",i,Table[i]->text);
+            fprintf(stderr," Table[%d] has %s and type %d\n",i,Table[i]->text, Table[i]->datatype);
 }
 
 int hashCheckUndeclared(void){

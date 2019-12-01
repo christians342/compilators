@@ -1,6 +1,6 @@
 #import "tac.h"
 
-TAC* makeBinOperation(int type, TAC* code0, TAC* code1);
+TAC* makeBinOperation(int type, TAC* code0, TAC* code1, int datatype);
 TAC* makeIfThen(TAC* code0, TAC* code1);
 TAC* makeWhile(TAC* code0, TAC* code1, HASH_NODE* label, HASH_NODE* jumpLabel);
 TAC* makeFunc(TAC* code0, TAC* code1, TAC* code2);
@@ -71,6 +71,29 @@ void generateASMVariables(AST* node, FILE* fout){
 	}
 }
 
+void generateASMTemps(FILE* fout){
+    HASH_NODE** table = getTable();
+
+    for(int i = 0; i < HASH_SIZE; i++){
+        for(HASH_NODE* node = table[i]; node; node = node->next){
+            if(strncmp(node->text, "__temp", 5) == 0){
+                fprintf(fout, "_%s:\n"
+                            "\t.globl	_%s\n"
+                            "\t.type  _%s, @object\n"
+                            , node->text, node->text, node->text);
+
+                fprintf(stderr, "entrou %d", node->datatype);
+                if(node->datatype == DATATYPE_FLOAT || node->datatype == DATATYPE_BOOL || node->datatype == DATATYPE_INT){
+                    fprintf(fout,
+                            "\t.long	0\n"
+                            "\t.align   4\n"
+                            "\t.size	_%s, 4\n", node->text);
+                }
+            }
+        }
+    }
+}
+
 void generateASM(TAC* tac, FILE* fout){
     if (!tac) return;
 
@@ -81,23 +104,23 @@ void generateASM(TAC* tac, FILE* fout){
     switch(tac->type){ 
         case TAC_MOVE:
             fprintf(fout, "\n##TAC_MOVE\n"
-                        "movl	%s(%%rip), %%eax\n"
+                        "movl	_%s(%%rip), %%eax\n"
                         "movl	%%eax, _%s(%%rip)\n",
                         tac->op1->text, tac->res->text);
             break;
         case TAC_ADD:
             fprintf(fout, "\n##TAC_ADD\n"
-                        "movl	%s(%%rip), %%eax\n" 
-                        "addl	%s(%%rip), %%eax\n" 
-                        "movl	%%eax, %s(%%rip)\n",
+                        "movl	_%s(%%rip), %%eax\n" 
+                        "addl	_%s(%%rip), %%eax\n" 
+                        "movl	%%eax, _%s(%%rip)\n",
                     tac->op1->text, tac->op2->text, tac->res->text);
             break;
 
         case TAC_SUB:
             fprintf(fout, "\n##TAC_SUB\n"
-                        "movl	%s(%%rip), %%eax\n" 
-                        "addl	%s(%%rip), %%eax\n" 
-                        "movl	%%eax, %s(%%rip)\n",
+                        "movl	_%s(%%rip), %%eax\n" 
+                        "addl	_%s(%%rip), %%eax\n" 
+                        "movl	%%eax, _%s(%%rip)\n",
                     tac->op1->text, tac->op2->text, tac->res->text);
             break;
 
@@ -109,11 +132,11 @@ void generateASM(TAC* tac, FILE* fout){
 
         case TAC_GREATER:
             fprintf(fout, "\n##TAC_GREATER\n"
-                            "movl	%s(%%rip), %%edx\n"
-                            "movl	%s(%%rip), %%eax\n"
+                            "movl	_%s(%%rip), %%edx\n"
+                            "movl	_%s(%%rip), %%eax\n"
                             "cmpl	%%eax, %%edx\n"
-                            "jle .L%d\n",
-                            tac->op1->text, tac->op2->text, l);
+                            "jle    _%s\n",
+                            tac->op1->text, tac->op2->text, tac->res->text);
             l++;                
             break;
 
@@ -122,28 +145,28 @@ void generateASM(TAC* tac, FILE* fout){
                             "movl	%s(%%rip), %%edx\n"
                             "movl	%s(%%rip), %%eax\n"
                             "cmpl	%%eax, %%edx\n"
-                            "jge .L%d\n",
-                            tac->op1->text, tac->op2->text, l);
+                            "jge    _%s\n",
+                            tac->op1->text, tac->op2->text, tac->res->text);
             l++;
             break;
 
         case TAC_LE:
             fprintf(fout, "\n##TAC_LE\n"
-                            "movl	%s(%%rip), %%edx\n"
-                            "movl	%s(%%rip), %%eax\n"
+                            "movl	_%s(%%rip), %%edx\n"
+                            "movl	_%s(%%rip), %%eax\n"
                             "cmpl	%%eax, %%edx\n"
-                            "jg .L%d\n",
-                            tac->op1->text, tac->op2->text, l);
+                            "jg     _%s\n",
+                            tac->op1->text, tac->op2->text, tac->res->text);
             l++;
             break;
 
         case TAC_GE:
             fprintf(fout, "\n##TAC_GE\n"
-                            "movl	%s(%%rip), %%edx\n"
-                            "movl	%s(%%rip), %%eax\n"
+                            "movl	_%s(%%rip), %%edx\n"
+                            "movl	_%s(%%rip), %%eax\n"
                             "cmpl	%%eax, %%edx\n"
-                            "jl .L%d\n",
-                            tac->op1->text, tac->op2->text, l);
+                            "jl     _%s\n",
+                            tac->op1->text, tac->op2->text, tac->res->text);
             l++;
             break;
 
@@ -213,43 +236,43 @@ TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel){
             return makeAssign(code[0], ast->symbol);
             break;
         case AST_ADD:
-            return makeBinOperation(TAC_ADD, code[0], code[1]);
+            return makeBinOperation(TAC_ADD, code[0], code[1], ast->datatype);
             break;
         case AST_SUB:
-            return makeBinOperation(TAC_SUB, code[0], code[1]);
+            return makeBinOperation(TAC_SUB, code[0], code[1], ast->datatype);
             break;
         case AST_MUL:
-            return makeBinOperation(TAC_MUL, code[0], code[1]);
+            return makeBinOperation(TAC_MUL, code[0], code[1], ast->datatype);
             break;
         case AST_DIV:
-            return makeBinOperation(TAC_DIV, code[0], code[1]);
+            return makeBinOperation(TAC_DIV, code[0], code[1], ast->datatype);
             break;
         case AST_GREATER:
-            return makeBinOperation(TAC_GREATER, code[0], code[1]);
+            return makeBinOperation(TAC_GREATER, code[0], code[1], ast->datatype);
             break;
         case AST_LESSER:
-            return makeBinOperation(TAC_LESSER, code[0], code[1]);
+            return makeBinOperation(TAC_LESSER, code[0], code[1], ast->datatype);
             break;
         case AST_OR:
-            return makeBinOperation(TAC_OR, code[0], code[1]);
+            return makeBinOperation(TAC_OR, code[0], code[1], ast->datatype);
             break;
         case AST_AND:
-            return makeBinOperation(TAC_AND, code[0], code[1]);
+            return makeBinOperation(TAC_AND, code[0], code[1], ast->datatype);
             break;
         case AST_LE:
-            return makeBinOperation(TAC_LE, code[0], code[1]);
+            return makeBinOperation(TAC_LE, code[0], code[1], ast->datatype);
             break;
         case AST_GE:
-            return makeBinOperation(TAC_GE, code[0], code[1]);
+            return makeBinOperation(TAC_GE, code[0], code[1], ast->datatype);
             break;
         case AST_EQUAL:
-            return makeBinOperation(TAC_EQUAL, code[0], code[1]);
+            return makeBinOperation(TAC_EQUAL, code[0], code[1], ast->datatype);
             break;
         case AST_DIF:
-            return makeBinOperation(TAC_DIF, code[0], code[1]);
+            return makeBinOperation(TAC_DIF, code[0], code[1], ast->datatype);
             break;
         case AST_NOT:
-            return makeBinOperation(TAC_NOT, code[0], code[1]);
+            return makeBinOperation(TAC_NOT, code[0], code[1], ast->datatype);
             break;
         case AST_IF:
         case AST_IFELSE:
@@ -274,10 +297,10 @@ TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel){
             return tacJoin(code[0], tacJoin(code[1], tacCreate(TAC_VECEXP, ast->symbol, code[0]?code[0]->res:0, code[1]?code[1]->res:0)));
             break;
         case AST_VECREAD:
-            return tacJoin(code[0], tacCreate(TAC_VEC, makeTemp(), ast->symbol, code[0]?code[0]->res:0));
+            return tacJoin(code[0], tacCreate(TAC_VEC, makeTemp(0), ast->symbol, code[0]?code[0]->res:0));
             break;
         case AST_IDEXP:
-            return tacJoin(code[0], tacCreate(TAC_FUNCCALL, makeTemp(), ast->symbol, 0));
+            return tacJoin(code[0], tacCreate(TAC_FUNCCALL, makeTemp(DATATYPE_BOOL), ast->symbol, 0));
             break;
         //case AST_LPARAM: 
         //    return tacJoin(code[1], tacJoin(code[0], tacCreate(TAC_ARGPUSH, code[0]?code[0]->res:0, 0, 0)));
@@ -302,12 +325,12 @@ TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel){
     }
 }
 
-TAC* makeBinOperation(int type, TAC* code0, TAC* code1){
+TAC* makeBinOperation(int type, TAC* code0, TAC* code1, int datatype){
     return tacJoin(
                     tacJoin(code0, 
                             code1), 
                     tacCreate(type, 
-                              makeTemp(), 
+                              makeTemp(datatype), 
                               code0? code0->res : 0,
                               code1? code1->res : 0));
 }
@@ -349,7 +372,7 @@ TAC* makeFor(HASH_NODE* symbol, TAC* exp1, TAC* exp2, TAC* exp3, TAC* cmd, HASH_
 
     TAC *tacLabelBeforeForCondition = tacCreate(TAC_LABEL, forLabel, 0, 0);
 
-    TAC *tacCondition = tacCreate(TAC_LE, makeTemp(), symbol, exp2 ? exp2->res : 0);
+    TAC *tacCondition = tacCreate(TAC_LE, makeTemp(DATATYPE_BOOL), symbol, exp2 ? exp2->res : 0);
 
     TAC *tacIncrement = tacCreate(TAC_INCREMENT, symbol, exp3 ? exp3->res : 0, 0);
 

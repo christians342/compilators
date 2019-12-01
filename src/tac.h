@@ -61,5 +61,6 @@ TAC* generateCode(AST *ast, HASH_NODE* loopLabel, HASH_NODE* jumpLabel);
 TAC* tacJoin(TAC* tac1, TAC* tac2);
 void generateASM(TAC* tac, FILE* fout);
 void generateASMVariables(AST* node, FILE* fout);
+void generateASMTemps(FILE* fout);
 
 #endif
