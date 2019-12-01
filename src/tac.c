@@ -44,13 +44,12 @@ void generateASMVariables(AST* node, FILE* fout){
 }
 
 void generateASM(TAC* tac, FILE* fout){
-    fprintf(stderr, "\nEntrou");
     if (!tac) return;
+
     if(tac->prev){
         generateASM(tac->prev, fout);
     }
-    
-    fprintf(stderr, "%d ", tac->type);
+
     switch(tac->type){ 
         case TAC_MOVE:
             fprintf(fout, "\n##TAC_MOVE\n"
@@ -150,10 +149,13 @@ void generateASM(TAC* tac, FILE* fout){
                         "\t.type	%s, @function\n"
                         "%s:\n"
                         "\tpushq	%%rbp\n"
-                        "\tmovq	%%rsp, %%rbp\n"
-                        "\tpopq	%%rbp\n"
-                        "\tret\n",
+                        "\tmovq	%%rsp, %%rbp\n",
                         tac->res->text, tac->res->text, tac->res->text);
+            break;
+        case TAC_ENDFUN:
+            fprintf(fout, "\n##TAC_ENDFUN\n" 
+                        "\tpopq	%%rbp\n"
+                        "\tret\n");
             break;
     }
     return;
