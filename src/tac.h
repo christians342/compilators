@@ -62,5 +62,6 @@ TAC* tacJoin(TAC* tac1, TAC* tac2);
 void generateASM(TAC* tac, FILE* fout);
 void generateASMVariables(AST* node, FILE* fout);
 void generateASMTemps(FILE* fout);
+void generateASMLiterals(FILE* fout);
 
 #endif

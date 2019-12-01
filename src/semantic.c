@@ -34,7 +34,7 @@ int areNumericEquivalents(AST* node1, AST* node2) {
 }
 
 int checkArithmeticDatatype(AST* node1, AST* node2){
-    int datatype = DATATYPE_BYTE;
+    int datatype = DATATYPE_INT;
 
     if(node1->datatype == DATATYPE_BOOL || node2->datatype == DATATYPE_BOOL ||
         node1->datatype == DATATYPE_ERROR || node2->datatype == DATATYPE_ERROR)
@@ -119,7 +119,6 @@ void setSymbolTypes(AST *node){
 }
 
 void setDataTypes(AST *node){
-
     if(node->son[0]->type == AST_LONG)
         node->symbol->datatype = DATATYPE_LONG;
 

@@ -82,13 +82,46 @@ void generateASMTemps(FILE* fout){
                             "\t.type  _%s, @object\n"
                             , node->text, node->text, node->text);
 
-                fprintf(stderr, "entrou %d", node->datatype);
-                if(node->datatype == DATATYPE_FLOAT || node->datatype == DATATYPE_BOOL || node->datatype == DATATYPE_INT){
+                if(node->datatype == 0 || node->datatype == DATATYPE_FLOAT || node->datatype == DATATYPE_BOOL || node->datatype == DATATYPE_INT){
                     fprintf(fout,
                             "\t.long	0\n"
                             "\t.align   4\n"
                             "\t.size	_%s, 4\n", node->text);
                 }
+            }
+        }
+    }
+}
+
+void generateASMLiterals(FILE* fout){
+    HASH_NODE** table = getTable();
+    int LC = 0;
+
+    for(int i = 0; i < HASH_SIZE; i++){
+        for(HASH_NODE* node = table[i]; node; node = node->next){
+            if(node->type == SYMBOL_LITINT || node->type == SYMBOL_LITREAL){
+                fprintf(fout, "_%s:\n"
+                            "\t.globl	_%s\n"
+                            "\t.type  _%s, @object\n"
+                            "\t.long	%s\n"
+                            "\t.align   4\n"
+                            "\t.size	_%s, 4\n"
+                            , node->text, node->text, node->text, node->text, node->text);
+            } else if(node->type == SYMBOL_LITSTRING){
+                fprintf(fout, "\t.section	.rodata\n"
+                              "_LC%d:\n"
+                              "\t.string	%s\n", LC, node->text);
+                              LC++;
+            } else if(node->type == SYMBOL_LITBOOL){
+                fprintf(fout, "_%s:\n"
+                            "\t.globl	_%s\n"
+                            "\t.type  _%s, @object\n"
+                            "\t.long	%d\n"
+                            "\t.align   4\n"
+                            "\t.size	_%s, 4\n"
+                            , node->text, node->text, node->text, 
+                            strncmp(node->text, "TRUE", 4) == 0? 1 : 0, node->text);
+            
             }
         }
     }

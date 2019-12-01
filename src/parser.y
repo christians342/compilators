@@ -83,13 +83,15 @@
 program:   
           ldecl                                                 {root = $1; 
                                                                 astreePrint($1, 0);
-                                                                checkSemantics($1);
+                                                                //checkSemantics($1);
                                                                 fprintf(stderr, "%d semantic errors.\n", getSemanticErrors());
                                                                 FILE *fptr = fopen("asm.s", "w");
-                                                                tacPrintBackwards(generateCode($1, 0, 0));
+                                                                TAC* tac = generateCode($1, 0, 0);
+                                                                tacPrintBackwards(tac);
                                                                 generateASMVariables(getRoot(), fptr);
                                                                 generateASMTemps(fptr);
-                                                                generateASM(generateCode($1, 0, 0), fptr);}    
+                                                                generateASMLiterals(fptr);
+                                                                generateASM(tac, fptr);}    
         ;
 
 ldecl:
