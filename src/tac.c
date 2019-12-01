@@ -109,7 +109,7 @@ void generateASMLiterals(FILE* fout){
                             , node->text, node->text, node->text, node->text, node->text);
             } else if(node->type == SYMBOL_LITSTRING){
                 fprintf(fout, "\t.section	.rodata\n"
-                              "_LC%d:\n"
+                              ".LC%d:\n"
                               "\t.string	%s\n", LC, node->text);
                               LC++;
             } else if(node->type == SYMBOL_LITBOOL){
@@ -129,6 +129,8 @@ void generateASMLiterals(FILE* fout){
 
 void generateASM(TAC* tac, FILE* fout){
     if (!tac) return;
+
+    static int LC = 0;
 
     if(tac->prev){
         generateASM(tac->prev, fout);
@@ -240,6 +242,13 @@ void generateASM(TAC* tac, FILE* fout){
             fprintf(fout, "\n##TAC_ENDFUN\n" 
                         "\tpopq	%%rbp\n"
                         "\tret\n");
+            break;
+        case TAC_PRINT:
+            fprintf(fout, "\n##TAC_PRINT\n" 
+                        "\tleaq	.LC%d(%%rip), %%rdi\n"
+                        "\tmovl	$0, %%eax\n"
+                        "\tcall	printf@PLT\n",
+                        LC++);
             break;
     }
     return;
