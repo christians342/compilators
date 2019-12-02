@@ -1,12 +1,6 @@
- int  a =  1;
- int  i =  2;
+ int  a =  5;
  int  b =  3;
- bool  boo =  TRUE;
- byte  baite =  'x';
- long  lung =  127;
- float  floating =  126;
+ int  i =  1;
+ int  k =  6;
  int main (){
-print  "oioioi" ;
-}
- int mainn (){
-}
+print  "\n"  a}

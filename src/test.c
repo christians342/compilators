@@ -14,6 +14,10 @@ int main(){
     printf("aaa %d, %d\n", a, b);
     printf("bbb %d, %d\n", a, b);
 
+    if(a < b){
+        b = 5;
+    }
+
     a = b + b + b + b;
 }
 

@@ -7,12 +7,10 @@ int k = 6;
 int main ()
 {
 
-  if((a < 7) v (i > 4)) then
+  if(i > 4) then
   {
-      a = 5;
+      print "\n" a
   };
-
-  i = 8;
 
 }
 

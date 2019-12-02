@@ -3,8 +3,8 @@
 #
 # Makefile for single compiler call
 
-etapa5: y.tab.o lex.yy.o main.o hash.o astree.o semantic.o tac.o
-	gcc -o etapa6 lex.yy.o main.o hash.o astree.o semantic.o tac.o
+etapa6: y.tab.o lex.yy.o main.o hash.o astree.o semantic.o asm.o tac.o
+	gcc -o etapa6 lex.yy.o main.o hash.o astree.o semantic.o asm.o tac.o
 lex.yy.o: lex.yy.c y.tab.c
 	gcc -c  lex.yy.c  
 y.tab.o: y.tab.c
@@ -17,6 +17,8 @@ astree.o: astree.c
 	gcc -c astree.c -Wall -ggdb3
 semantic.o: semantic.c
 	gcc -c semantic.c -Wall -ggdb3
+asm.o: asm.c
+	gcc -c asm.c -Wall -ggdb3
 tac.o: tac.c
 	gcc -c tac.c -Wall -ggdb3
 lex.yy.c: scanner.l

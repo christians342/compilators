@@ -60,6 +60,12 @@ main:
 	leaq	.LC1(%rip), %rdi
 	movl	$0, %eax
 	call	printf@PLT
+	movl	a(%rip), %edx
+	movl	b(%rip), %eax
+	cmpl	%eax, %edx
+	jge	.L2
+	movl	$5, b(%rip)
+.L2:
 	movl	b(%rip), %eax
 	sall	$2, %eax
 	movl	%eax, a(%rip)

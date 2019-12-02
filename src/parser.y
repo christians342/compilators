@@ -7,6 +7,7 @@
     #include "astree.h"
     #include "semantic.h"
     #include "tac.h"
+    #include "asm.h"
 
     int getLineNumber();
     int yyerror(char *message);
