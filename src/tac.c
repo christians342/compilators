@@ -156,14 +156,11 @@ void generateASM(TAC* tac, FILE* fout){
             l++;
             break;  
 
-<<<<<<< Updated upstream
-=======
        case TAC_JUMP:
               fprintf(fout, "\tjmp .%s\n", tac->res->text);
               break;
 
 
->>>>>>> Stashed changes
         case TAC_ADD:
             fprintf(fout, "\n##TAC_ADD\n"
                         "\tmovl	%s(%%rip), %%edx\n"
@@ -350,7 +347,6 @@ void generateASM(TAC* tac, FILE* fout){
                         "\tpopq	%%rbp\n"
                         "\tret\n");
             break;
-<<<<<<< Updated upstream
         case TAC_PRINT:
             fprintf(stderr, "\nprint argument datatype %d", tac->res->datatype);
             if(tac->res->datatype == DATATYPE_STRING){
@@ -369,7 +365,6 @@ void generateASM(TAC* tac, FILE* fout){
                             tac->res->text);
             }
             break;
-=======
 
         case TAC_IFZ:
             fprintf(fout, "\n##TAC_IFZ\n"
@@ -378,7 +373,6 @@ void generateASM(TAC* tac, FILE* fout){
                     "\tandl %%eax, %%edx\n"
                     "\tjz .%s\n",
                      tac->op1->text, tac->res->text);
->>>>>>> Stashed changes
     }
     return;
 }
