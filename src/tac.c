@@ -239,7 +239,7 @@ void generateASM(TAC* tac, FILE* fout){
             break;
 
         case TAC_LE:
-                        fprintf(fout, "\n##TAC_LESSER\n"
+                        fprintf(fout, "\n##TAC_LE\n"
                             "\tmovl	%s(%%rip), %%edx\n"
                             "\tmovl	%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
@@ -255,7 +255,7 @@ void generateASM(TAC* tac, FILE* fout){
             break;
 
         case TAC_GE:
-                       fprintf(fout, "\n##TAC_LESSER\n"
+                       fprintf(fout, "\n##TAC_GE\n"
                             "\tmovl	%s(%%rip), %%edx\n"
                             "\tmovl	%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
@@ -271,7 +271,7 @@ void generateASM(TAC* tac, FILE* fout){
             break;
 
         case TAC_EQUAL:
-                       fprintf(fout, "\n##TAC_LESSER\n"
+                       fprintf(fout, "\n##TAC_EQUAL\n"
                             "\tmovl	%s(%%rip), %%edx\n"
                             "\tmovl	%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
@@ -287,7 +287,7 @@ void generateASM(TAC* tac, FILE* fout){
             break;
 
         case TAC_DIF:
-                   fprintf(fout, "\n##TAC_LESSER\n"
+                   fprintf(fout, "\n##TAC_DIF\n"
                             "\tmovl	%s(%%rip), %%edx\n"
                             "\tmovl	%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
@@ -319,7 +319,7 @@ void generateASM(TAC* tac, FILE* fout){
             break;
         
         case TAC_OR:
-            fprintf(fout, "\n##TAC_AND\n"
+            fprintf(fout, "\n##TAC_OR\n"
                             "\tmovl	%s(%%rip), %%eax\n"
                             "\tmovl	%s(%%rip), %%edx\n"
                             "\torl %%eax, %%edx\n"
