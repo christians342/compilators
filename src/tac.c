@@ -32,9 +32,9 @@ void generateASMVariables(AST* node, FILE* fout){
     if(!node) return;
     switch(node->type){
         case AST_VARDEC:
-            fprintf(fout, "%s:\n"
-                        "\t.globl	%s\n"
-                        "\t.type  %s, @object\n"
+            fprintf(fout, "_%s:\n"
+                        "\t.globl	_%s\n"
+                        "\t.type  _%s, @object\n"
                         , node->symbol->text, node->symbol->text, node->symbol->text);
             if(node->son[0]->type == AST_INT || node->son[0]->type == AST_FLOAT){
                 fprintf(fout,
@@ -97,6 +97,10 @@ void generateASMLiterals(FILE* fout){
     HASH_NODE** table = getTable();
     int LC = 0;
 
+    fprintf(fout, "\t.section	.rodata\n"
+                              ".LC_int:\n"
+                              "\t.string	\"%%d\"\n");
+
     for(int i = 0; i < HASH_SIZE; i++){
         for(HASH_NODE* node = table[i]; node; node = node->next){
             if(node->type == SYMBOL_LITINT || node->type == SYMBOL_LITREAL){
@@ -150,7 +154,6 @@ void generateASM(TAC* tac, FILE* fout){
             l++;
             break;  
 
-            break;
         case TAC_ADD:
             fprintf(fout, "\n##TAC_ADD\n"
                         "\tmovl	%s(%%rip), %%edx\n"
@@ -269,11 +272,22 @@ void generateASM(TAC* tac, FILE* fout){
                         "\tret\n");
             break;
         case TAC_PRINT:
-            fprintf(fout, "\n##TAC_PRINT\n" 
-                        "\tleaq	.LC%d(%%rip), %%rdi\n"
-                        "\tmovl	$0, %%eax\n"
-                        "\tcall	printf@PLT\n",
-                        LC++);
+            fprintf(stderr, "\nprint argument datatype %d", tac->res->datatype);
+            if(tac->res->datatype == DATATYPE_STRING){
+                fprintf(fout, "\n##TAC_PRINT\n" 
+                            "\tleaq	.LC%d(%%rip), %%rdi\n"
+                            "\tmovl	$0, %%eax\n"
+                            "\tcall	printf@PLT\n",
+                            LC++);
+            } else if(tac->res->datatype == DATATYPE_IDENTIFIER){
+                fprintf(fout, "\n##TAC_PRINT\n"
+                            "\tmovl	_%s(%%rip), %%eax\n"
+                            "\tmovl	%%eax, %%esi\n" 
+                            "\tleaq	.LC_int(%%rip), %%rdi\n"
+                            "\tmovl	$0, %%eax\n"
+                            "\tcall	printf@PLT\n",
+                            tac->res->text);
+            }
             break;
     }
     return;
