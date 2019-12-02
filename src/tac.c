@@ -79,15 +79,15 @@ void generateASMTemps(FILE* fout){
         for(HASH_NODE* node = table[i]; node; node = node->next){
             if(strncmp(node->text, "__temp", 5) == 0){
                 fprintf(fout, "%s:\n"
-                            "\t.globl	_%s\n"
-                            "\t.type  _%s, @object\n"
+                            "\t.globl	%s\n"
+                            "\t.type  %s, @object\n"
                             , node->text, node->text, node->text);
 
                 if(node->datatype == 0 || node->datatype == DATATYPE_FLOAT || node->datatype == DATATYPE_BOOL || node->datatype == DATATYPE_INT){
                     fprintf(fout,
                             "\t.long	0\n"
                             "\t.align   4\n"
-                            "\t.size	_%s, 4\n", node->text);
+                            "\t.size	%s, 4\n", node->text);
                 }
             }
         }
@@ -157,7 +157,8 @@ void generateASM(TAC* tac, FILE* fout){
             break;  
 
        case TAC_JUMP:
-              fprintf(fout, "\tjmp .%s\n", tac->res->text);
+              fprintf(fout,"\n##TAC_JUMP\n" 
+                    "\tjmp .%s\n", tac->res->text);
               break;
 
 
