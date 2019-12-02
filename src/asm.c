@@ -15,25 +15,22 @@ void generateASMVariables(AST* node, FILE* fout){
             fprintf(stderr, "\nparam type: %d\n", node->son[0]->type);
             
         case AST_VARDEC:
-            fprintf(fout, "_%s:\n"
-                        "\t.globl	_%s\n"
-                        "\t.type  _%s, @object\n"
-                        , node->symbol->text, node->symbol->text, node->symbol->text);
+            fprintf(fout, "\t.globl	_%s\n"
+                          "\t.data\n"
+                          "\t.align   4\n"
+                          "\t.type  _%s, @object\n"
+                          "\t.size	_%s, 4\n" 
+                          "_%s:\n",
+                        node->symbol->text, node->symbol->text,
+                        node->symbol->text, node->symbol->text);
             if(node->son[0]->type == AST_INT || node->son[0]->type == AST_FLOAT){
                 fprintf(fout,
-                        "\t.long	%s\n"
-                        "\t.align   4\n"
-                        "\t.size	_%s, 4\n", 
-                        node->type == AST_VARDEC ? node->son[1]->symbol->text : "0",
-                        node->symbol->text);
+                        "\t.long	%s\n",
+                        node->type == AST_VARDEC ? node->son[1]->symbol->text : "0");
             }
             if(node->son[0]->type == AST_BOOL){
-                fprintf(fout,
-                        "\t.long	%d\n"
-                        "\t.align   4\n"
-                        "\t.size	_%s, 4\n",
-                        booleanToInt(node->symbol->text), 
-                        node->symbol->text);
+                fprintf(fout, "\t.long	%d\n",
+                              booleanToInt(node->symbol->text));
             }
             if(node->son[0]->type == AST_BYTE){
                 int asciiForZero = 48;
@@ -135,8 +132,7 @@ void generateASM(TAC* tac, FILE* fout){
             fprintf(fout, "\n##TAC_MOVE\n"
 
                         "\tmovl	_%s(%%rip), %%eax\n"
-                        "\tmovl	%%eax, _%s(%%rip)\n"
-                        "\tmovl $0, %%eax\n",
+                        "\tmovl	%%eax, _%s(%%rip)\n",
                         tac->op1->text, tac->res->text);
             break;
 
@@ -368,8 +364,8 @@ void generateASM(TAC* tac, FILE* fout){
             fprintf(fout, "\n##TAC_IFZ\n"
                     "\tmovl	 _%s(%%rip), %%eax\n"
                     "\tmovl $1, %%edx\n"
-                    "\tandl %%eax, %%edx\n"
-                    "\tjz .%s\n",
+                    "\tcmpl %%eax, %%edx\n"
+                    "\tjne .%s\n",
                      tac->op1->text, tac->res->text);
     }
     return;
