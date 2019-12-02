@@ -11,6 +11,9 @@ int booleanToInt(char *boolean){
 void generateASMVariables(AST* node, FILE* fout){
     if(!node) return;
     switch(node->type){
+        case AST_PARAM:
+            fprintf(stderr, "\nparam type: %d\n", node->son[0]->type);
+            
         case AST_VARDEC:
             fprintf(fout, "_%s:\n"
                         "\t.globl	_%s\n"
@@ -20,7 +23,9 @@ void generateASMVariables(AST* node, FILE* fout){
                 fprintf(fout,
                         "\t.long	%s\n"
                         "\t.align   4\n"
-                        "\t.size	_%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
+                        "\t.size	_%s, 4\n", 
+                        node->type == AST_VARDEC ? node->son[1]->symbol->text : "0",
+                        node->symbol->text);
             }
             if(node->son[0]->type == AST_BOOL){
                 fprintf(fout,
@@ -31,15 +36,20 @@ void generateASMVariables(AST* node, FILE* fout){
                         node->symbol->text);
             }
             if(node->son[0]->type == AST_BYTE){
+                int asciiForZero = 48;
                 fprintf(fout,
                         "\t.byte	%d\n"
-                        "\t.size	_%s, 1\n", node->son[1]->symbol->text[1], node->symbol->text);
+                        "\t.size	_%s, 1\n", 
+                        node->type == AST_VARDEC ? node->son[1]->symbol->text[1] : asciiForZero, 
+                        node->symbol->text);
             }
             if(node->son[0]->type == AST_LONG){
                 fprintf(fout,
                         "\t.quad	%s\n"
                         "\t.align   8\n"
-                        "\t.size	_%s, 8\n", node->son[1]->symbol->text, node->symbol->text);
+                        "\t.size	_%s, 8\n", 
+                        node->type == AST_VARDEC ? node->son[1]->symbol->text : "0",
+                        node->symbol->text);
             }
             break;
         default:
