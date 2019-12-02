@@ -18,35 +18,29 @@ void generateASMVariables(AST* node, FILE* fout){
             fprintf(fout, "\t.globl	_%s\n"
                           "\t.data\n"
                           "\t.align   4\n"
-                          "\t.type  _%s, @object\n"
-                          "\t.size	_%s, 4\n" 
-                          "_%s:\n",
-                        node->symbol->text, node->symbol->text,
+                          "\t.type  _%s, @object\n",
                         node->symbol->text, node->symbol->text);
             if(node->son[0]->type == AST_INT || node->son[0]->type == AST_FLOAT){
-                fprintf(fout,
-                        "\t.long	%s\n",
-                        node->type == AST_VARDEC ? node->son[1]->symbol->text : "0");
+                fprintf(fout,"\t.size	_%s, 4\n" 
+                             "_%s:\n"
+                             "\t.long	%s\n",
+                             node->symbol->text, node->symbol->text,
+                             node->type == AST_VARDEC ? node->son[1]->symbol->text : "0");
             }
             if(node->son[0]->type == AST_BOOL){
-                fprintf(fout, "\t.long	%d\n",
-                              booleanToInt(node->symbol->text));
+                fprintf(fout, "\t.size	_%s, 4\n" 
+                             "_%s:\n"
+                             "\t.long	%d\n",
+                             node->symbol->text, node->symbol->text,
+                             booleanToInt(node->symbol->text));
             }
             if(node->son[0]->type == AST_BYTE){
                 int asciiForZero = 48;
-                fprintf(fout,
-                        "\t.byte	%d\n"
-                        "\t.size	_%s, 1\n", 
-                        node->type == AST_VARDEC ? node->son[1]->symbol->text[1] : asciiForZero, 
-                        node->symbol->text);
-            }
-            if(node->son[0]->type == AST_LONG){
-                fprintf(fout,
-                        "\t.quad	%s\n"
-                        "\t.align   8\n"
-                        "\t.size	_%s, 8\n", 
-                        node->type == AST_VARDEC ? node->son[1]->symbol->text : "0",
-                        node->symbol->text);
+                fprintf(fout, "\t.size	_%s, 4\n" 
+                              "_%s:\n"
+                              "\t.byte	%d\n",
+                              node->symbol->text, node->symbol->text,
+                              node->type == AST_VARDEC ? node->son[1]->symbol->text[1] : asciiForZero);
             }
             break;
         default:
@@ -64,17 +58,16 @@ void generateASMTemps(FILE* fout){
     for(int i = 0; i < HASH_SIZE; i++){
         for(HASH_NODE* node = table[i]; node; node = node->next){
             if(strncmp(node->text, "__temp", 5) == 0){
-                fprintf(fout, "_%s:\n"
+                fprintf(fout, 
                             "\t.globl	_%s\n"
-                            "\t.type  _%s, @object\n"
-                            , node->text, node->text, node->text);
-
-                if(node->datatype == 0 || node->datatype == DATATYPE_FLOAT || node->datatype == DATATYPE_BOOL || node->datatype == DATATYPE_INT){
-                    fprintf(fout,
-                            "\t.long	0\n"
+                            "\t.data\n"
                             "\t.align   4\n"
-                            "\t.size	_%s, 4\n", node->text);
-                }
+                            "\t.type  _%s, @object\n"
+                            "\t.size	_%s, 4\n" 
+                             "_%s:\n"
+                             "\t.long	0\n",
+                            node->text, node->text,
+                            node->text, node->text);
             }
         }
     }
@@ -91,12 +84,14 @@ void generateASMLiterals(FILE* fout){
     for(int i = 0; i < HASH_SIZE; i++){
         for(HASH_NODE* node = table[i]; node; node = node->next){
             if(node->type == SYMBOL_LITINT || node->type == SYMBOL_LITREAL){
-                fprintf(fout, "_%s:\n"
+                fprintf(fout, 
                             "\t.globl	_%s\n"
-                            "\t.type  _%s, @object\n"
-                            "\t.long	%s\n"
+                            "\t.data\n"
                             "\t.align   4\n"
+                            "\t.type  _%s, @object\n"
                             "\t.size	_%s, 4\n"
+                            "_%s:\n"
+                            "\t.long	%s\n"
                             , node->text, node->text, node->text, node->text, node->text);
             } else if(node->type == SYMBOL_LITSTRING){
                 fprintf(fout, "\t.section	.rodata\n"
@@ -104,14 +99,16 @@ void generateASMLiterals(FILE* fout){
                               "\t.string	%s\n", LC, node->text);
                               LC++;
             } else if(node->type == SYMBOL_LITBOOL){
-                fprintf(fout, "_%s:\n"
+                fprintf(fout, 
                             "\t.globl	_%s\n"
-                            "\t.type  _%s, @object\n"
-                            "\t.long	%d\n"
+                            "\t.data\n"
                             "\t.align   4\n"
+                            "\t.type  _%s, @object\n"
                             "\t.size	_%s, 4\n"
-                            , node->text, node->text, node->text, 
-                            strncmp(node->text, "TRUE", 4) == 0? 1 : 0, node->text);
+                            "_%s:\n"
+                            "\t.long	%d\n"
+                            , node->text, node->text, node->text, node->text, 
+                            strncmp(node->text, "TRUE", 4) == 0? 1 : 0);
             
             }
         }
