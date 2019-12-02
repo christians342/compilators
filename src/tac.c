@@ -33,9 +33,9 @@ void generateASMVariables(AST* node, FILE* fout){
     if(!node) return;
     switch(node->type){
         case AST_VARDEC:
-            fprintf(fout, "_%s:\n"
-                        "\t.globl	_%s\n"
-                        "\t.type  _%s, @object\n"
+            fprintf(fout, "%s:\n"
+                        "\t.globl	%s\n"
+                        "\t.type  %s, @object\n"
                         , node->symbol->text, node->symbol->text, node->symbol->text);
             if(node->son[0]->type == AST_INT || node->son[0]->type == AST_FLOAT){
                 fprintf(fout,
@@ -78,7 +78,7 @@ void generateASMTemps(FILE* fout){
     for(int i = 0; i < HASH_SIZE; i++){
         for(HASH_NODE* node = table[i]; node; node = node->next){
             if(strncmp(node->text, "__temp", 5) == 0){
-                fprintf(fout, "_%s:\n"
+                fprintf(fout, "%s:\n"
                             "\t.globl	_%s\n"
                             "\t.type  _%s, @object\n"
                             , node->text, node->text, node->text);

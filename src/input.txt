@@ -1,21 +1,5 @@
 // UFRGS - Compiladores - Marcelo Johann - 2019/2
 
-<<<<<<< Updated upstream
-int a = 1;
-int i = 2;
-int b = 3;
-
-bool boo = TRUE;
-byte baite = 'x';
-long lung = 127;
-float floating = 126;
-int main ()
-{
-    print "oioioi";
-}
-
-
-=======
 int a = 5;
 int b = 3;
 int i = 1;
@@ -32,5 +16,3 @@ int main ()
 
 }
 
-
->>>>>>> Stashed changes
