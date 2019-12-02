@@ -33,34 +33,34 @@ void generateASMVariables(AST* node, FILE* fout){
     if(!node) return;
     switch(node->type){
         case AST_VARDEC:
-            fprintf(fout, "%s:\n"
-                        "\t.globl	%s\n"
-                        "\t.type  %s, @object\n"
+            fprintf(fout, "_%s:\n"
+                        "\t.globl	_%s\n"
+                        "\t.type  _%s, @object\n"
                         , node->symbol->text, node->symbol->text, node->symbol->text);
             if(node->son[0]->type == AST_INT || node->son[0]->type == AST_FLOAT){
                 fprintf(fout,
                         "\t.long	%s\n"
                         "\t.align   4\n"
-                        "\t.size	%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
+                        "\t.size	_%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
             }
             if(node->son[0]->type == AST_BOOL){
                 fprintf(fout,
                         "\t.long	%d\n"
                         "\t.align   4\n"
-                        "\t.size	%s, 4\n",
+                        "\t.size	_%s, 4\n",
                         booleanToInt(node->symbol->text), 
                         node->symbol->text);
             }
             if(node->son[0]->type == AST_BYTE){
                 fprintf(fout,
                         "\t.byte	%d\n"
-                        "\t.size	%s, 1\n", node->son[1]->symbol->text[1], node->symbol->text);
+                        "\t.size	_%s, 1\n", node->son[1]->symbol->text[1], node->symbol->text);
             }
             if(node->son[0]->type == AST_LONG){
                 fprintf(fout,
                         "\t.quad	%s\n"
                         "\t.align   8\n"
-                        "\t.size	%s, 8\n", node->son[1]->symbol->text, node->symbol->text);
+                        "\t.size	_%s, 8\n", node->son[1]->symbol->text, node->symbol->text);
             }
             break;
         default:
@@ -78,16 +78,16 @@ void generateASMTemps(FILE* fout){
     for(int i = 0; i < HASH_SIZE; i++){
         for(HASH_NODE* node = table[i]; node; node = node->next){
             if(strncmp(node->text, "__temp", 5) == 0){
-                fprintf(fout, "%s:\n"
-                            "\t.globl	%s\n"
-                            "\t.type  %s, @object\n"
+                fprintf(fout, "_%s:\n"
+                            "\t.globl	_%s\n"
+                            "\t.type  _%s, @object\n"
                             , node->text, node->text, node->text);
 
                 if(node->datatype == 0 || node->datatype == DATATYPE_FLOAT || node->datatype == DATATYPE_BOOL || node->datatype == DATATYPE_INT){
                     fprintf(fout,
                             "\t.long	0\n"
                             "\t.align   4\n"
-                            "\t.size	%s, 4\n", node->text);
+                            "\t.size	_%s, 4\n", node->text);
                 }
             }
         }
@@ -145,8 +145,8 @@ void generateASM(TAC* tac, FILE* fout){
         case TAC_MOVE:
             fprintf(fout, "\n##TAC_MOVE\n"
 
-                        "\tmovl	%s(%%rip), %%eax\n"
-                        "\tmovl	%%eax, %s(%%rip)\n"
+                        "\tmovl	_%s(%%rip), %%eax\n"
+                        "\tmovl	%%eax, _%s(%%rip)\n"
                         "\tmovl $0, %%eax\n",
                         tac->op1->text, tac->res->text);
             break;
@@ -164,43 +164,43 @@ void generateASM(TAC* tac, FILE* fout){
 
         case TAC_ADD:
             fprintf(fout, "\n##TAC_ADD\n"
-                        "\tmovl	%s(%%rip), %%edx\n"
-                        "\tmovl	%s(%%rip), %%eax\n"
+                        "\tmovl	_%s(%%rip), %%edx\n"
+                        "\tmovl	_%s(%%rip), %%eax\n"
                         "\taddl	%%eax, %%edx\n"
                         "\tmovl	%%edx, %%eax\n"
-                        "\tmovl	%%eax, %s(%%rip)\n"
+                        "\tmovl	%%eax, _%s(%%rip)\n"
                         "\tmovl	$0, %%eax\n",
                         tac->op1->text, tac->op2->text, tac->res->text);
             break;
 
         case TAC_SUB:
             fprintf(fout, "\n##TAC_SUB\n"
-                        "\tmovl	%s(%%rip), %%edx\n"
-                        "\tmovl	%s(%%rip), %%eax\n"
+                        "\tmovl	_%s(%%rip), %%edx\n"
+                        "\tmovl	_%s(%%rip), %%eax\n"
                         "\tsubl	%%eax, %%edx\n"
                         "\tmovl	%%edx, %%eax\n"
-                        "\tmovl	%%eax, %s(%%rip)\n"
+                        "\tmovl	%%eax, _%s(%%rip)\n"
                         "\tmovl	$0, %%eax\n",
                         tac->op1->text, tac->op2->text, tac->res->text);
             break;
 
         case TAC_MUL:
             fprintf(fout, "\n##TAC_MUL\n"
-                            "\tmovl	 %s(%%rip), %%edx\n"
-                            "\tmovl	 %s(%%rip), %%eax\n"
+                            "\tmovl	 _%s(%%rip), %%edx\n"
+                            "\tmovl	 _%s(%%rip), %%eax\n"
                             "\timull %%edx, %%eax\n"
-                            "\tmovl	 %%eax, %s(%%rip)\n"
+                            "\tmovl	 %%eax, _%s(%%rip)\n"
                             "\tmovl	 $0, %%eax\n",
                             tac->op1->text, tac->op2->text, tac->res->text);
             break;
 
         case TAC_DIV:
             fprintf(fout, "\n##TAC_DIV\n"
-                            "\tmovl	%s(%%rip), %%eax\n"
-                            "\tmovl	%s(%%rip), %%ecx\n"
+                            "\tmovl	_%s(%%rip), %%eax\n"
+                            "\tmovl	_%s(%%rip), %%ecx\n"
                             "\tcltd\n"
                             "\tidivl %%ecx\n"
-                            "\tmovl	%%eax, %s(%%rip)\n"
+                            "\tmovl	%%eax, _%s(%%rip)\n"
                             "\tmovl	$0, %%eax\n",
                             tac->op1->text, tac->op2->text, tac->res->text);
             break;
@@ -208,8 +208,8 @@ void generateASM(TAC* tac, FILE* fout){
         case TAC_GREATER:
             fprintf(fout, "\n##TAC_GREATER\n"
 
-                            "\tmovl	%s(%%rip), %%edx\n"
-                            "\tmovl	%s(%%rip), %%eax\n"
+                            "\tmovl	_%s(%%rip), %%edx\n"
+                            "\tmovl	_%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
                             "\tjg .L%d\n"
                             "\tmovl $0, %%eax\n"
@@ -217,15 +217,15 @@ void generateASM(TAC* tac, FILE* fout){
                             ".L%d:\n"
                             "\tmovl $1, %%eax\n"
                             ".L%d:\n"
-                            "\tmovl %%eax, %s(%%rip)\n",
+                            "\tmovl %%eax, _%s(%%rip)\n",
                             tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);  
             l = l + 2;          
             break;
 
         case TAC_LESSER:
             fprintf(fout, "\n##TAC_LESSER\n"
-                            "\tmovl	%s(%%rip), %%edx\n"
-                            "\tmovl	%s(%%rip), %%eax\n"
+                            "\tmovl	_%s(%%rip), %%edx\n"
+                            "\tmovl	_%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
                             "\tjl  .L%d\n"
                             "\tmovl $0, %%eax\n"
@@ -233,15 +233,15 @@ void generateASM(TAC* tac, FILE* fout){
                             ".L%d:\n"
                             "\tmovl $1, %%eax\n"
                             ".L%d:\n"
-                            "\tmovl %%eax, %s(%%rip)\n",
+                            "\tmovl %%eax, _%s(%%rip)\n",
                             tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);  
             l = l + 2;
             break;
 
         case TAC_LE:
                         fprintf(fout, "\n##TAC_LE\n"
-                            "\tmovl	%s(%%rip), %%edx\n"
-                            "\tmovl	%s(%%rip), %%eax\n"
+                            "\tmovl	_%s(%%rip), %%edx\n"
+                            "\tmovl	_%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
                             "\tjle  .L%d\n"
                             "\tmovl $0, %%eax\n"
@@ -249,15 +249,15 @@ void generateASM(TAC* tac, FILE* fout){
                             ".L%d:\n"
                             "\tmovl $1, %%eax\n"
                             ".L%d:\n"
-                            "\tmovl %%eax, %s(%%rip)\n",
+                            "\tmovl %%eax, _%s(%%rip)\n",
                             tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);  
             l = l + 2;
             break;
 
         case TAC_GE:
                        fprintf(fout, "\n##TAC_GE\n"
-                            "\tmovl	%s(%%rip), %%edx\n"
-                            "\tmovl	%s(%%rip), %%eax\n"
+                            "\tmovl	_%s(%%rip), %%edx\n"
+                            "\tmovl	_%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
                             "\tjge  .L%d\n"
                             "\tmovl $0, %%eax\n"
@@ -265,15 +265,15 @@ void generateASM(TAC* tac, FILE* fout){
                             ".L%d:\n"
                             "\tmovl $1, %%eax\n"
                             ".L%d:\n"
-                            "\tmovl %%eax, %s(%%rip)\n",
+                            "\tmovl %%eax, _%s(%%rip)\n",
                             tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);  
             l = l + 2;
             break;
 
         case TAC_EQUAL:
                        fprintf(fout, "\n##TAC_EQUAL\n"
-                            "\tmovl	%s(%%rip), %%edx\n"
-                            "\tmovl	%s(%%rip), %%eax\n"
+                            "\tmovl	_%s(%%rip), %%edx\n"
+                            "\tmovl	_%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
                             "\tje  .L%d\n"
                             "\tmovl $0, %%eax\n"
@@ -281,15 +281,15 @@ void generateASM(TAC* tac, FILE* fout){
                             ".L%d:\n"
                             "\tmovl $1, %%eax\n"
                             ".L%d:\n"
-                            "\tmovl %%eax, %s(%%rip)\n",
+                            "\tmovl %%eax, _%s(%%rip)\n",
                             tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text); 
             l = l + 2; 
             break;
 
         case TAC_DIF:
                    fprintf(fout, "\n##TAC_DIF\n"
-                            "\tmovl	%s(%%rip), %%edx\n"
-                            "\tmovl	%s(%%rip), %%eax\n"
+                            "\tmovl	_%s(%%rip), %%edx\n"
+                            "\tmovl	_%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
                             "\tjne  .L%d\n"
                             "\tmovl $0, %%eax\n"
@@ -297,7 +297,7 @@ void generateASM(TAC* tac, FILE* fout){
                             ".L%d:\n"
                             "\tmovl $1, %%eax\n"
                             ".L%d:\n"
-                            "\tmovl %%eax, %s(%%rip)\n",
+                            "\tmovl %%eax, _%s(%%rip)\n",
                             tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);  
 
             l = l + 2;
@@ -305,8 +305,8 @@ void generateASM(TAC* tac, FILE* fout){
         
         case TAC_AND:
             fprintf(fout, "\n##TAC_AND\n"
-                            "\tmovl	%s(%%rip), %%eax\n"
-                            "\tmovl	%s(%%rip), %%edx\n"
+                            "\tmovl	_%s(%%rip), %%eax\n"
+                            "\tmovl	_%s(%%rip), %%edx\n"
                             "\tandl %%eax, %%edx\n"
                             "\tjz .L%d\n"
                             "\tmovl $1, %%eax\n"
@@ -314,14 +314,14 @@ void generateASM(TAC* tac, FILE* fout){
                             ".L%d:\n"
                             "\tmovl $0, %%eax\n"
                             ".L%d:\n"
-                            "\tmovl %%eax, %s(%%rip)\n", tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);
+                            "\tmovl %%eax, _%s(%%rip)\n", tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);
             l = l + 2;
             break;
         
         case TAC_OR:
             fprintf(fout, "\n##TAC_OR\n"
-                            "\tmovl	%s(%%rip), %%eax\n"
-                            "\tmovl	%s(%%rip), %%edx\n"
+                            "\tmovl	_%s(%%rip), %%eax\n"
+                            "\tmovl	_%s(%%rip), %%edx\n"
                             "\torl %%eax, %%edx\n"
                             "\tjz .L%d\n"
                             "\tmovl $1, %%eax\n"
@@ -329,7 +329,7 @@ void generateASM(TAC* tac, FILE* fout){
                             ".L%d:\n"
                             "\tmovl $0, %%eax\n"
                             ".L%d:\n"
-                            "\tmovl %%eax, %s(%%rip)\n", tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);
+                            "\tmovl %%eax, _%s(%%rip)\n", tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);
             l = l + 2;
             break;
             
@@ -369,7 +369,7 @@ void generateASM(TAC* tac, FILE* fout){
 
         case TAC_IFZ:
             fprintf(fout, "\n##TAC_IFZ\n"
-                    "\tmovl	 %s(%%rip), %%eax\n"
+                    "\tmovl	 _%s(%%rip), %%eax\n"
                     "\tmovl $1, %%edx\n"
                     "\tandl %%eax, %%edx\n"
                     "\tjz .%s\n",
