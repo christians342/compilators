@@ -173,6 +173,7 @@ cmd:
         |  KW_FOR '(' TK_IDENTIFIER ':' exp ',' exp ',' exp ')' cmd {$$=astreeCreate(AST_FOR, $3, $5, $7, $9, $11, getLineNumber());}
         |  KW_BREAK                                     {$$=astreeCreate(AST_BREAK, 0, 0, 0, 0, 0, getLineNumber());}
         |  block                                        {$$=$1;}
+        |  TK_IDENTIFIER '(' expParam ')'               {$$=astreeCreate(AST_IDEXP, $1, $3, 0, 0, 0, getLineNumber());}
         |                                               {$$=0;}
         ;           
 
@@ -188,6 +189,7 @@ cmdrest:
 
 expParam:
            exp expParamRest                    {$$=astreeCreate(AST_EPARAM, 0, $1, $2, 0, 0, getLineNumber());}
+        |                                      {$$=0;}  
         ;
 
 expParamRest:       

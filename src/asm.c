@@ -355,6 +355,14 @@ void generateASM(TAC* tac, FILE* fout){
                             tac->res->text);
             }
             break;
+        
+        case TAC_FUNCCALL:
+            fprintf(fout, "\n##TAC_FUNCCALL\n"
+                            "\tmovl	$0, %%eax\n"
+                            "\tcall	%s\n",
+                            tac->op1->text);
+        
+            break;
 
         case TAC_IFZ:
             fprintf(fout, "\n##TAC_IFZ\n"
