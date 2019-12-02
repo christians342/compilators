@@ -41,26 +41,26 @@ void generateASMVariables(AST* node, FILE* fout){
                 fprintf(fout,
                         "\t.long	%s\n"
                         "\t.align   4\n"
-                        "\t.size	_%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
+                        "\t.size	%s, 4\n", node->son[1]->symbol->text, node->symbol->text);
             }
             if(node->son[0]->type == AST_BOOL){
                 fprintf(fout,
                         "\t.long	%d\n"
                         "\t.align   4\n"
-                        "\t.size	_%s, 4\n",
+                        "\t.size	%s, 4\n",
                         booleanToInt(node->symbol->text), 
                         node->symbol->text);
             }
             if(node->son[0]->type == AST_BYTE){
                 fprintf(fout,
                         "\t.byte	%d\n"
-                        "\t.size	_%s, 1\n", node->son[1]->symbol->text[1], node->symbol->text);
+                        "\t.size	%s, 1\n", node->son[1]->symbol->text[1], node->symbol->text);
             }
             if(node->son[0]->type == AST_LONG){
                 fprintf(fout,
                         "\t.quad	%s\n"
                         "\t.align   8\n"
-                        "\t.size	_%s, 8\n", node->son[1]->symbol->text, node->symbol->text);
+                        "\t.size	%s, 8\n", node->son[1]->symbol->text, node->symbol->text);
             }
             break;
         default:
@@ -146,15 +146,24 @@ void generateASM(TAC* tac, FILE* fout){
             fprintf(fout, "\n##TAC_MOVE\n"
 
                         "\tmovl	%s(%%rip), %%eax\n"
-                        "\tmovl	%%eax, %s(%%rip)\n",
+                        "\tmovl	%%eax, %s(%%rip)\n"
+                        "\tmovl $0, %%eax\n",
                         tac->op1->text, tac->res->text);
             break;
 
         case TAC_LABEL:
-            fprintf(fout, "\n.L%d:\n", l);
+            fprintf(fout, "\n.%s:\n", tac->res->text);
             l++;
             break;  
 
+<<<<<<< Updated upstream
+=======
+       case TAC_JUMP:
+              fprintf(fout, "\tjmp .%s\n", tac->res->text);
+              break;
+
+
+>>>>>>> Stashed changes
         case TAC_ADD:
             fprintf(fout, "\n##TAC_ADD\n"
                         "\tmovl	%s(%%rip), %%edx\n"
@@ -198,15 +207,21 @@ void generateASM(TAC* tac, FILE* fout){
                             tac->op1->text, tac->op2->text, tac->res->text);
             break;
 
-
         case TAC_GREATER:
             fprintf(fout, "\n##TAC_GREATER\n"
 
                             "\tmovl	%s(%%rip), %%edx\n"
                             "\tmovl	%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
-                            "\tjle .L%d\n",
-                            tac->op1->text, tac->op2->text, l);            
+                            "\tjg .L%d\n"
+                            "\tmovl $0, %%eax\n"
+                            "\tjmp .L%d\n"
+                            ".L%d:\n"
+                            "\tmovl $1, %%eax\n"
+                            ".L%d:\n"
+                            "\tmovl %%eax, %s(%%rip)\n",
+                            tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);  
+            l = l + 2;          
             break;
 
         case TAC_LESSER:
@@ -214,49 +229,112 @@ void generateASM(TAC* tac, FILE* fout){
                             "\tmovl	%s(%%rip), %%edx\n"
                             "\tmovl	%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
-                            "\tjge .L%d\n",
-                            tac->op1->text, tac->op2->text, l);
+                            "\tjl  .L%d\n"
+                            "\tmovl $0, %%eax\n"
+                            "\tjmp .L%d\n"
+                            ".L%d:\n"
+                            "\tmovl $1, %%eax\n"
+                            ".L%d:\n"
+                            "\tmovl %%eax, %s(%%rip)\n",
+                            tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);  
+            l = l + 2;
             break;
 
         case TAC_LE:
-            fprintf(fout, "\n##TAC_LE\n"
+                        fprintf(fout, "\n##TAC_LESSER\n"
                             "\tmovl	%s(%%rip), %%edx\n"
                             "\tmovl	%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
-                            "\tjg .L%d\n",
-                            tac->op1->text, tac->op2->text, l);
+                            "\tjle  .L%d\n"
+                            "\tmovl $0, %%eax\n"
+                            "\tjmp .L%d\n"
+                            ".L%d:\n"
+                            "\tmovl $1, %%eax\n"
+                            ".L%d:\n"
+                            "\tmovl %%eax, %s(%%rip)\n",
+                            tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);  
+            l = l + 2;
             break;
 
         case TAC_GE:
-            fprintf(fout, "\n##TAC_GE\n"
+                       fprintf(fout, "\n##TAC_LESSER\n"
                             "\tmovl	%s(%%rip), %%edx\n"
                             "\tmovl	%s(%%rip), %%eax\n"
                             "\tcmpl	%%eax, %%edx\n"
-                            "\tjl .L%d\n",
-                            tac->op1->text, tac->op2->text, l);
+                            "\tjge  .L%d\n"
+                            "\tmovl $0, %%eax\n"
+                            "\tjmp .L%d\n"
+                            ".L%d:\n"
+                            "\tmovl $1, %%eax\n"
+                            ".L%d:\n"
+                            "\tmovl %%eax, %s(%%rip)\n",
+                            tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);  
+            l = l + 2;
             break;
 
+        case TAC_EQUAL:
+                       fprintf(fout, "\n##TAC_LESSER\n"
+                            "\tmovl	%s(%%rip), %%edx\n"
+                            "\tmovl	%s(%%rip), %%eax\n"
+                            "\tcmpl	%%eax, %%edx\n"
+                            "\tje  .L%d\n"
+                            "\tmovl $0, %%eax\n"
+                            "\tjmp .L%d\n"
+                            ".L%d:\n"
+                            "\tmovl $1, %%eax\n"
+                            ".L%d:\n"
+                            "\tmovl %%eax, %s(%%rip)\n",
+                            tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text); 
+            l = l + 2; 
+            break;
+
+        case TAC_DIF:
+                   fprintf(fout, "\n##TAC_LESSER\n"
+                            "\tmovl	%s(%%rip), %%edx\n"
+                            "\tmovl	%s(%%rip), %%eax\n"
+                            "\tcmpl	%%eax, %%edx\n"
+                            "\tjne  .L%d\n"
+                            "\tmovl $0, %%eax\n"
+                            "\tjmp .L%d\n"
+                            ".L%d:\n"
+                            "\tmovl $1, %%eax\n"
+                            ".L%d:\n"
+                            "\tmovl %%eax, %s(%%rip)\n",
+                            tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);  
+
+            l = l + 2;
+            break;
+        
         case TAC_AND:
             fprintf(fout, "\n##TAC_AND\n"
                             "\tmovl	%s(%%rip), %%eax\n"
-                            "\ttestl	%%eax, %%eax\n"
-                            "\tje	.L%d\n"
-                            "\tmovl	%s(%%rip), %%eax\n"
-                            "\ttestl	%%eax, %%eax\n"
-                            "\tje	.L%d\n",
-                            tac->op1->text, l, tac->op2->text, l);
+                            "\tmovl	%s(%%rip), %%edx\n"
+                            "\tandl %%eax, %%edx\n"
+                            "\tjz .L%d\n"
+                            "\tmovl $1, %%eax\n"
+                            "\tjmp .L%d\n"
+                            ".L%d:\n"
+                            "\tmovl $0, %%eax\n"
+                            ".L%d:\n"
+                            "\tmovl %%eax, %s(%%rip)\n", tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);
+            l = l + 2;
             break;
-
-       /* case TAC_OR:
-            fprintf(fout, "\n##TAC_OR\n"
-                        "\tmovl	%s(%%rip), %%eax\n"
-                        "\ttestl %%eax, %%eax\n"
-                        "\tjne .L%d\n"
-                        "\tmovl	%s(%%rip), %%eax\n"
-                        "\ttestl %%eax, %%eax\n"
-                        "\tje .L%d\n",
-                        tac->op1->text, l, tac->op2->text, l+1);
-            break;*/
+        
+        case TAC_OR:
+            fprintf(fout, "\n##TAC_AND\n"
+                            "\tmovl	%s(%%rip), %%eax\n"
+                            "\tmovl	%s(%%rip), %%edx\n"
+                            "\torl %%eax, %%edx\n"
+                            "\tjz .L%d\n"
+                            "\tmovl $1, %%eax\n"
+                            "\tjmp .L%d\n"
+                            ".L%d:\n"
+                            "\tmovl $0, %%eax\n"
+                            ".L%d:\n"
+                            "\tmovl %%eax, %s(%%rip)\n", tac->op1->text, tac->op2->text, l, l+1, l, l+1, tac->res->text);
+            l = l + 2;
+            break;
+            
 
         case TAC_BEGINFUN:
             fprintf(fout, "\n##TAC_BEGINFUN\n" 
@@ -272,6 +350,7 @@ void generateASM(TAC* tac, FILE* fout){
                         "\tpopq	%%rbp\n"
                         "\tret\n");
             break;
+<<<<<<< Updated upstream
         case TAC_PRINT:
             fprintf(stderr, "\nprint argument datatype %d", tac->res->datatype);
             if(tac->res->datatype == DATATYPE_STRING){
@@ -290,6 +369,16 @@ void generateASM(TAC* tac, FILE* fout){
                             tac->res->text);
             }
             break;
+=======
+
+        case TAC_IFZ:
+            fprintf(fout, "\n##TAC_IFZ\n"
+                    "\tmovl	 %s(%%rip), %%eax\n"
+                    "\tmovl $1, %%edx\n"
+                    "\tandl %%eax, %%edx\n"
+                    "\tjz .%s\n",
+                     tac->op1->text, tac->res->text);
+>>>>>>> Stashed changes
     }
     return;
 }

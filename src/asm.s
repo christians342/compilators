@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 _a:
 	.globl	_a
 	.type  _a, @object
@@ -78,6 +79,32 @@ _127:
 	.long	127
 	.align   4
 	.size	_127, 4
+=======
+a:
+	.globl	a
+	.type  a, @object
+	.long	5
+	.align   4
+	.size	a, 4
+b:
+	.globl	b
+	.type  b, @object
+	.long	3
+	.align   4
+	.size	b, 4
+i:
+	.globl	i
+	.type  i, @object
+	.long	1
+	.align   4
+	.size	i, 4
+k:
+	.globl	k
+	.type  k, @object
+	.long	6
+	.align   4
+	.size	k, 4
+>>>>>>> Stashed changes
 
 ##TAC_BEGINFUN
 	.globl	main
@@ -85,6 +112,7 @@ _127:
 main:
 	pushq	%rbp
 	movq	%rsp, %rbp
+<<<<<<< Updated upstream
 
 ##TAC_ENDFUN
 	popq	%rbp
@@ -97,6 +125,63 @@ mainn:
 	pushq	%rbp
 	movq	%rsp, %rbp
 
+=======
+
+##TAC_LESSER
+	movl	a(%rip), %edx
+	movl	7(%rip), %eax
+	cmpl	%eax, %edx
+	jl  .L0
+	movl $0, %eax
+	jmp .L1
+.L0:
+	movl $1, %eax
+.L1:
+	movl %eax, __temp3__(%rip)
+
+##TAC_GREATER
+	movl	i(%rip), %edx
+	movl	4(%rip), %eax
+	cmpl	%eax, %edx
+	jg .L2
+	movl $0, %eax
+	jmp .L3
+.L2:
+	movl $1, %eax
+.L3:
+	movl %eax, __temp4__(%rip)
+
+##TAC_AND
+	movl	__temp3__(%rip), %eax
+	movl	__temp4__(%rip), %edx
+	orl %eax, %edx
+	jz .L4
+	movl $1, %eax
+	jmp .L5
+.L4:
+	movl $0, %eax
+.L5:
+	movl %eax, __temp5__(%rip)
+
+##TAC_IFZ
+	movl	 __temp5__(%rip), %eax
+	movl $1, %edx
+	andl %eax, %edx
+	jz .__if_label1__
+
+##TAC_MOVE
+	movl	5(%rip), %eax
+	movl	%eax, a(%rip)
+	movl $0, %eax
+
+.__if_label1__:
+
+##TAC_MOVE
+	movl	8(%rip), %eax
+	movl	%eax, i(%rip)
+	movl $0, %eax
+
+>>>>>>> Stashed changes
 ##TAC_ENDFUN
 	popq	%rbp
 	ret

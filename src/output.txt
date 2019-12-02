@@ -1,11 +1,11 @@
- int  a =  1;
+ int  a =  5;
+ int  b =  3;
  int  i =  1;
- int  b =  1;
+ int  k =  6;
  int main (){
-if(( i >  100) v ( i <  100)) then 
+if(( a <  7) v ( i >  4)) then 
 {
- a =  50;
- b =  30;
+ a =  5;
 };
- i =  88;
+ i =  8;
 }

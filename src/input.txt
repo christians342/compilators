@@ -1,5 +1,6 @@
 // UFRGS - Compiladores - Marcelo Johann - 2019/2
 
+<<<<<<< Updated upstream
 int a = 1;
 int i = 2;
 int b = 3;
@@ -14,3 +15,22 @@ int main ()
 }
 
 
+=======
+int a = 5;
+int b = 3;
+int i = 1;
+int k = 6;
+int main ()
+{
+
+  if((a < 7) v (i > 4)) then
+  {
+      a = 5;
+  };
+
+  i = 8;
+
+}
+
+
+>>>>>>> Stashed changes
