@@ -96,7 +96,7 @@ void generateASMLiterals(FILE* fout){
             } else if(node->type == SYMBOL_LITSTRING){
                 fprintf(fout, "\t.section	.rodata\n"
                               ".LC%d:\n"
-                              "\t.string	%s\n", LC, node->text);
+                              "\t.string	%s\n", strlen(node->text), node->text);
                               LC++;
             } else if(node->type == SYMBOL_LITBOOL){
                 fprintf(fout, 
@@ -337,7 +337,7 @@ void generateASM(TAC* tac, FILE* fout){
                             "\tleaq	.LC%d(%%rip), %%rdi\n"
                             "\tmovl	$0, %%eax\n"
                             "\tcall	printf@PLT\n",
-                            LC++);
+                            strlen(tac->res->text));
             } else if(tac->res->datatype == DATATYPE_IDENTIFIER){
                 fprintf(fout, "\n##TAC_PRINT\n"
                             "\tmovl	_%s(%%rip), %%eax\n"
@@ -361,9 +361,18 @@ void generateASM(TAC* tac, FILE* fout){
             fprintf(fout, "\n##TAC_IFZ\n"
                     "\tmovl	 _%s(%%rip), %%eax\n"
                     "\tmovl $1, %%edx\n"
-                    "\tcmpl %%eax, %%edx\n"
-                    "\tjne .%s\n",
+                    "\tandl %%eax, %%edx\n"
+                    "\tjz .%s\n",
                      tac->op1->text, tac->res->text);
+            break;
+        case TAC_READ:
+                    fprintf(fout, "\n##TAC_READ\n"
+                    "\tleaq	_%s(%%rip), %%rsi\n"
+                    "\tleaq	.LC_int(%%rip), %%rdi\n"
+                    "\tmovl	$0, %%eax\n"
+                    "\tcall	 __isoc99_scanf@PLT\n",
+                    tac->res->text);
+            break;
     }
     return;
 }

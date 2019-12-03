@@ -156,7 +156,7 @@ TAC* makeIfThen(TAC* code0, TAC* code1){
 
 TAC* makeIfThenElse(TAC* code0, TAC* code1, TAC* code2){
     HASH_NODE* label = makeLabel("else");
-    TAC* tacIf = tacCreate(TAC_IFZ, label, code0? code0->res : 0, 0);
+    TAC* tacIf = tacJoin(code0, tacCreate(TAC_IFZ, label, code0? code0->res : 0, 0));
     TAC* tacLabel = tacCreate(TAC_LABEL, label, 0, 0);
 
     HASH_NODE* elseLabel = makeLabel("after_else");
